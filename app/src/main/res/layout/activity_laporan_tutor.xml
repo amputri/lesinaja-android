@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.tutor.les.presensi.LaporanTutorActivity">
+
+    <RelativeLayout
+        android:id="@+id/containerHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/header"
+            android:name="com.lesinaja.les.ui.header.ToolbarFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_toolbar" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@id/containerFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/footer"
+            android:name="com.lesinaja.les.ui.tutor.FooterTutorFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_footer_tutor" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/containerFooter"
+        android:layout_below="@+id/containerHeader"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tvNamaSiswa"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Siswa: Anggun Hanna Attaya"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.gridlayout.widget.GridLayout
+                    android:id="@+id/daftarNama"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_height="wrap_content"
+                    app:columnCount="1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvNamaSiswa">
+
+                    <TextView
+                        android:id="@+id/tvNamaLes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Les: " />
+
+                    <TextView
+                        android:id="@+id/tvJumlahPertemuan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pertemuan: " />
+
+                </androidx.gridlayout.widget.GridLayout>
+
+                <androidx.gridlayout.widget.GridLayout
+                    android:id="@+id/informasiLes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:columnCount="1"
+                    app:layout_constraintTop_toBottomOf="@+id/daftarNama">
+
+                    <Button
+                        android:id="@+id/btnTanggal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Senin, 2 Agustus 2021 (09:00-10:00)"
+                        app:backgroundTint="@color/green" />
+
+                    <TextView
+                        android:id="@+id/tvPertemuan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pertemuan ke-1" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textMateri"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Materi"
+                        app:boxStrokeColor="@color/green"
+                        app:hintTextColor="@color/green">
+
+                        <EditText
+                            android:id="@+id/tvMateri"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/white"
+                            android:ems="10"
+                            android:inputType="textPersonName"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="0dp"
+                            android:textCursorDrawable="@drawable/black_cursor" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textLaporan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Laporan"
+                        app:boxStrokeColor="@color/green"
+                        app:hintTextColor="@color/green">
+
+                        <EditText
+                            android:id="@+id/tvLaporanTutor"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/white"
+                            android:ems="10"
+                            android:inputType="textPersonName"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="0dp"
+                            android:textCursorDrawable="@drawable/black_cursor" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btnKirimLaporan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:backgroundTint="@color/green"
+                        android:text="Kirim" />
+
+                </androidx.gridlayout.widget.GridLayout>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:elevation="5dp"
+                    app:cardBackgroundColor="@color/green"
+                    app:cardCornerRadius="5dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/informasiLes">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="2dp"
+                        app:cardCornerRadius="5dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="10dp"
+                            android:text="Penilaian dari Wali Murid"
+                            android:textColor="@color/green"
+                            android:textSize="20dp"
+                            android:textStyle="bold" />
+
+                        <RatingBar
+                            android:id="@+id/ratingTutor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:isIndicator="true"
+                            android:focusable="false"
+                            android:layout_marginTop="50dp" />
+
+                        <TextView
+                            android:id="@+id/etLaporanWaliMurid"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="110dp"
+                            android:layout_marginBottom="16dp"
+                            android:layout_marginHorizontal="16dp"
+                            android:text="Komentar Wali Murid"
+                            android:gravity="center_horizontal" />
+
+                    </androidx.cardview.widget.CardView>
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+</RelativeLayout>

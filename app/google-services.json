@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "373394832954",
+    "firebase_url": "https://lesinaja-b6947-default-rtdb.firebaseio.com",
+    "project_id": "lesinaja-b6947",
+    "storage_bucket": "lesinaja-b6947.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:373394832954:android:9b1d847c9c71be8e1dff03",
+        "android_client_info": {
+          "package_name": "com.lesinaja.les"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "373394832954-iivlo5ide3n8mb516olekom4did91a56.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lesinaja.les",
+            "certificate_hash": "81f95afbc75029ef427861528fd09b69f6ca2119"
+          }
+        },
+        {
+          "client_id": "373394832954-jb1b16jlgvtlbek121lsl6vofs2bbjd3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lesinaja.les",
+            "certificate_hash": "1210559f70e03c76e726f8d3931f1168dec662be"
+          }
+        },
+        {
+          "client_id": "373394832954-ivgv9650hjduuvjgfg2gu10k9m0ruu7n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHDKeWppp4yUocsPqPRmR25TVwBYiqz5c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "373394832954-ivgv9650hjduuvjgfg2gu10k9m0ruu7n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

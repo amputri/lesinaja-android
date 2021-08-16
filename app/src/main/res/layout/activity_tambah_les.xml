@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.walimurid.les.TambahLesActivity">
+
+    <RelativeLayout
+        android:id="@+id/containerHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/header"
+            android:name="com.lesinaja.les.ui.header.ToolbarFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_toolbar" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@id/containerFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/footer"
+            android:name="com.lesinaja.les.ui.walimurid.FooterWaliMuridFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_footer_wali_murid" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/containerFooter"
+        android:layout_below="@+id/containerHeader"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:fillViewport="true"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/textSiswa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Nama Siswa"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textSpinLes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Pilih Les" />
+
+            <Spinner
+                android:id="@+id/spinLes"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:dropDownWidth="match_parent" />
+
+            <Button
+                android:id="@+id/btnJadwal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/orange"
+                android:text="Rencana Jadwal Mulai sepekan"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/tvJadwal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+
+            <TextView
+                android:id="@+id/tvJadwalLama"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvLinkBukti"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/tvPreferensiTutor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preferensi Tutor"
+                android:layout_marginTop="16dp" />
+
+            <RadioGroup
+                android:id="@+id/radioPreferensiTutor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checkedButton="@id/laki"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/laki"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/green"
+                    android:text="Laki-Laki" />
+
+                <RadioButton
+                    android:id="@+id/perempuan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:buttonTint="@color/green"
+                    android:text="Perempuan" />
+
+                <RadioButton
+                    android:id="@+id/bebas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:buttonTint="@color/green"
+                    android:text="Bebas" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/textBiaya"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textStyle="bold"
+                android:text="Biaya Pendaftaran : 200000" />
+
+            <TextView
+                android:id="@+id/textUnggah"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Unggah Bukti Pembayaran berikut" />
+
+            <ImageView
+                android:id="@+id/ivBukti"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:srcCompat="@drawable/ic_file"
+                tools:ignore="VectorDrawableCompat" />
+
+            <Button
+                android:id="@+id/btnTambahLes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/green"
+                android:text="Kirim"
+                android:enabled="false"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnHapus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/white"
+                android:text="Batalkan"
+                android:visibility="gone"
+                android:textAllCaps="false"
+                android:textColor="@color/pink" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:fitsSystemWindows="true"
+tools:context=".ui.walimurid.les.pelamar.DetailTutorPelamarActivity">
+
+<RelativeLayout
+    android:id="@+id/containerHeader"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/header"
+        android:name="com.lesinaja.les.ui.header.ToolbarFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout="@layout/fragment_toolbar" />
+</RelativeLayout>
+
+<RelativeLayout
+    android:id="@id/containerFooter"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/footer"
+        android:name="com.lesinaja.les.ui.walimurid.FooterWaliMuridFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout="@layout/fragment_footer_wali_murid" />
+</RelativeLayout>
+
+<ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_above="@+id/containerFooter"
+    android:layout_below="@+id/containerHeader"
+    android:fillViewport="true">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvNamaSiswa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Siswa: "
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvNamaLes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Les: " />
+
+            <TextView
+                android:id="@+id/tvJumlahPertemuan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jumlah Pertemuan: " />
+
+            <TextView
+                android:id="@+id/tvTanggalMulai"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tanggal Mulai: " />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ivFoto"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_foto" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Nama Tutor" />
+
+            <TextView
+                android:id="@+id/tvNamaTutor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tutor ABC"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Telepon" />
+
+            <TextView
+                android:id="@+id/tvTelepon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0987654321"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Alamat" />
+
+            <TextView
+                android:id="@+id/tvAlamat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alamat ABC"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Perguruan Tinggi" />
+
+            <TextView
+                android:id="@+id/tvPerguruanTinggi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Universitas ABC"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Jurusan" />
+
+            <TextView
+                android:id="@+id/tvJurusan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jurusan ABC"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Pengalaman Mengajar" />
+
+            <TextView
+                android:id="@+id/tvPengalamanMengajar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pengalaman Mengajar"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Pelajaran Ahli" />
+
+            <TextView
+                android:id="@+id/tvMapelAhli"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mapel ABC"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Jenjang Ahli" />
+
+            <TextView
+                android:id="@+id/tvJenjangAhli"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jenjang ABC"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Video Microteaching" />
+
+            <TextView
+                android:id="@+id/tvLinkMicroteaching"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Youtube ABC"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnPilihTutor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Pilih Tutor"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/green" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</ScrollView>
+</RelativeLayout>

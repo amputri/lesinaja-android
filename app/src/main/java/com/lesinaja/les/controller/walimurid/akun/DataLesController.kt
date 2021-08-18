@@ -18,18 +18,22 @@ class DataLesController {
         val ref = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/kontak/id_desa")
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                Database.database.getReference("les_siswa/${key}/wilayah_status").setValue("${dataSnapshot.value.toString().substring(0,7)}_apply")
-            }
+                if (dataLes.preferensi_tutor == "laki-laki") {
+                    Database.database.getReference("les_siswa/${key}/wilayah_status").setValue("${dataSnapshot.value.toString().substring(0,4)}_l")
+                } else if (dataLes.preferensi_tutor == "perempuan") {
+                    Database.database.getReference("les_siswa/${key}/wilayah_status").setValue("${dataSnapshot.value.toString().substring(0,4)}_p")
+                } else {
+                    Database.database.getReference("les_siswa/${key}/wilayah_status").setValue("${dataSnapshot.value.toString().substring(0,4)}_b")
+                }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-
             }
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
 
         Database.database.getReference("les_siswa/${key}/waktu_mulai").removeValue()
 
         for (i in 0 until listJadwal.size) {
-                Database.database.getReference("les_siswa/${key}/waktu_mulai/${i}").setValue(listJadwal[i])
+            Database.database.getReference("les_siswa/${key}/waktu_mulai/${i}").setValue(listJadwal[i])
         }
     }
 
@@ -38,6 +42,21 @@ class DataLesController {
         Database.database.getReference("les_siswa/${key}/id_les").setValue(dataLes.id_les)
         Database.database.getReference("les_siswa/${key}/id_siswa").setValue(dataLes.id_siswa)
         Database.database.getReference("les_siswa/${key}/preferensi_tutor").setValue(dataLes.preferensi_tutor)
+
+        val ref = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/kontak/id_desa")
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataLes.preferensi_tutor == "laki-laki") {
+                    Database.database.getReference("les_siswa/${key}/wilayah_status").setValue("${dataSnapshot.value.toString().substring(0,4)}_l")
+                } else if (dataLes.preferensi_tutor == "perempuan") {
+                    Database.database.getReference("les_siswa/${key}/wilayah_status").setValue("${dataSnapshot.value.toString().substring(0,4)}_p")
+                } else {
+                    Database.database.getReference("les_siswa/${key}/wilayah_status").setValue("${dataSnapshot.value.toString().substring(0,4)}_b")
+                }
+
+            }
+            override fun onCancelled(databaseError: DatabaseError) {}
+        })
 
         Database.database.getReference("les_siswa/${key}/waktu_mulai").removeValue()
 

@@ -7,19 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContextCompat.startActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.lesinaja.les.R
 import com.lesinaja.les.base.Database
-import com.lesinaja.les.base.walimurid.DataSiswa
 import com.lesinaja.les.base.walimurid.SiswaKey
-import com.lesinaja.les.databinding.ActivitySiswaBinding
-import com.lesinaja.les.databinding.FragmentFooterWaliMuridBinding
-import com.lesinaja.les.databinding.ItemSiswaBinding
-import com.squareup.picasso.Picasso
 
 data class SiswaAdapter(val mCtx : Context, val layoutResId : Int, val siswaList : List<SiswaKey>)
     : ArrayAdapter<SiswaKey>(mCtx, layoutResId, siswaList) {
@@ -34,12 +29,11 @@ data class SiswaAdapter(val mCtx : Context, val layoutResId : Int, val siswaList
         val jenjang = Database.database.getReference("master_jenjangkelas/${siswa.id_jenjangkelas}/nama")
         jenjang.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                view.findViewById<TextView>(R.id.tvJenjangKelas).text = snapshot.value.toString()
+                if (snapshot.exists()) {
+                    view.findViewById<TextView>(R.id.tvJenjangKelas).text = snapshot.value.toString()
+                }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
 
         view.findViewById<TextView>(R.id.tvNamaSiswa).text = siswa.nama
@@ -71,33 +65,30 @@ data class SiswaAdapter(val mCtx : Context, val layoutResId : Int, val siswaList
     fun showDeleteDialog(siswa: SiswaKey) {
         val builder = AlertDialog.Builder(mCtx)
         builder.setMessage("yakin ingin menghapus ${siswa.nama}?")
-
         builder.setPositiveButton("Hapus") { p0,p1 ->
-            val biaya = Database.database.getReference("pembayaran").orderByChild("id_pengirim").equalTo(siswa.id_siswa)
+            val biaya = Database.database.getReference("pembayaran").orderByChild("bayar_pendaftaran").equalTo(siswa.id_siswa)
             biaya.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    for (h in dataSnapshot.children) {
-                        if (h.child("id_penerima").value.toString() == "null") {
-                            Database.database.getReference("pembayaran/${h.key}").removeValue()
-                            Database.database.getReference("siswa/${siswa.id_siswa}").removeValue()
-                            FirebaseStorage.getInstance().reference.child("bukti_daftar/${siswa.id_siswa}").delete()
+                    if (dataSnapshot.exists()) {
+                        for (h in dataSnapshot.children) {
+                            if (h.child("sudah_dikonfirmasi").value == false) {
+                                Database.database.getReference("pembayaran/${h.key}").removeValue()
+                                Database.database.getReference("siswa/${siswa.id_siswa}").removeValue()
+                                FirebaseStorage.getInstance().reference.child("bukti_daftar/${siswa.id_siswa}").delete()
+                                Database.database.getReference("jumlah_data/siswa").setValue(ServerValue.increment(-1))
+                                Database.database.getReference("jumlah_data/pembayaran").setValue(ServerValue.increment(-1))
 
-                            Toast.makeText(mCtx, "data berhasil dihapus", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(mCtx, "tidak dapat menghapus siswa terverifikasi", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(mCtx, "data berhasil dihapus", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(mCtx, "tidak dapat menghapus siswa terverifikasi", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-
-                }
+                override fun onCancelled(databaseError: DatabaseError) {}
             })
         }
-
-        builder.setNegativeButton("Batal") { p0,p1 ->
-        }
-
+        builder.setNegativeButton("Batal") { p0,p1 -> }
         builder.show()
     }
 }

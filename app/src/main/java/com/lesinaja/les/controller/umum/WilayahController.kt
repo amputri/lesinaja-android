@@ -7,7 +7,6 @@ import com.lesinaja.les.base.umum.Wilayah
 class WilayahController {
     fun getProvinsiList(idProvinsiUser: String, namaProvinsiUser: String): ArrayList<Wilayah> {
         val provinsi = Database.database.getReference("wilayah_provinsi")
-
         return assignToObject(provinsi, idProvinsiUser, namaProvinsiUser)
     }
 
@@ -38,10 +37,7 @@ class WilayahController {
                     }
                 }
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
 
         return wilayah

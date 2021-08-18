@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -14,11 +15,7 @@ import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.walimurid.LesKey
-import com.lesinaja.les.base.walimurid.SiswaKey
 import com.lesinaja.les.databinding.ActivityLesBinding
-import com.lesinaja.les.ui.walimurid.siswa.SiswaAdapter
-import com.lesinaja.les.ui.walimurid.siswa.UbahSiswaActivity
-import com.squareup.picasso.Picasso
 
 class LesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLesBinding
@@ -31,12 +28,17 @@ class LesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLesBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         lesList = mutableListOf()
 
         setSiswaAdapter()
 
         binding.btnAmbilLes.setOnClickListener {
-            goToTambahLes()
+            if (idSiswa != "0") {
+                goToTambahLes()
+            } else {
+                Toast.makeText(this, "pilih siswa terlebih dahulu", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -79,11 +81,7 @@ class LesActivity : AppCompatActivity() {
                     binding.lvLes.adapter = adapter
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
+            override fun onCancelled(error: DatabaseError) {}
         })
     }
 
@@ -98,10 +96,7 @@ class LesActivity : AppCompatActivity() {
                     siswa.add(Wilayah(h.key!!, h.child("nama").getValue() as String))
                 }
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
 
         binding.spinSiswa.adapter = ArrayAdapter(
@@ -111,10 +106,7 @@ class LesActivity : AppCompatActivity() {
         )
 
         binding.spinSiswa.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-
-            }
-
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                 val selectedObject = binding.spinSiswa.selectedItem as Wilayah
                 idSiswa = selectedObject.id
@@ -123,6 +115,5 @@ class LesActivity : AppCompatActivity() {
                 setListView()
             }
         }
-
     }
 }

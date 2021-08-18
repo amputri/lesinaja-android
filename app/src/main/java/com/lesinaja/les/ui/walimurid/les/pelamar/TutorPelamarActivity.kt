@@ -56,8 +56,9 @@ class TutorPelamarActivity : AppCompatActivity() {
         val ref = Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/id_tutorpelamar")
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                idPelamarList.clear()
                 if (snapshot.exists()) {
+                    idPelamarList.clear()
+
                     for (h in 0 until snapshot.childrenCount) {
                         idPelamarList.add(HeaderLes(
                             intent.getStringExtra(EXTRA_IDLESSISWA).toString(),
@@ -73,11 +74,7 @@ class TutorPelamarActivity : AppCompatActivity() {
                     binding.lvTutorPelamar.adapter = adapter
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
+            override fun onCancelled(error: DatabaseError) {}
         })
     }
 }

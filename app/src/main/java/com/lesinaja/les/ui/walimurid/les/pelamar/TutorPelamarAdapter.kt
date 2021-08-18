@@ -2,14 +2,12 @@ package com.lesinaja.les.ui.walimurid.les.pelamar
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -20,7 +18,6 @@ import com.lesinaja.les.base.walimurid.HeaderLes
 data class TutorPelamarAdapter(val mCtx : Context, val layoutResId : Int, val idPelamarList : List<HeaderLes>)
     : ArrayAdapter<HeaderLes>(mCtx, layoutResId, idPelamarList) {
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val layoutInflater: LayoutInflater = LayoutInflater.from(mCtx)
 
@@ -31,24 +28,27 @@ data class TutorPelamarAdapter(val mCtx : Context, val layoutResId : Int, val id
         val namaTutor = Database.database.getReference("user/${pelamar.id_transaksi}/nama")
         namaTutor.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshotNamaTutor: DataSnapshot) {
-
-                val perguruanTinggi = Database.database.getReference("user_role/tutor/${pelamar.id_transaksi}/perguruan_tinggi")
-                perguruanTinggi.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshotPerguruanTinggi: DataSnapshot) {
-
-                        val jurusan = Database.database.getReference("user_role/tutor/${pelamar.id_transaksi}/jurusan")
-                        jurusan.addValueEventListener(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshotJurusan: DataSnapshot) {
-
-                                view.findViewById<TextView>(R.id.tvNamaTutor).text = "${dataSnapshotNamaTutor.value}"
-                                view.findViewById<TextView>(R.id.tvPerguruanTinggi).text = "${dataSnapshotPerguruanTinggi.value}"
-                                view.findViewById<TextView>(R.id.tvJurusan).text = "${dataSnapshotJurusan.value}"
+                if (dataSnapshotNamaTutor.exists()) {
+                    val perguruanTinggi = Database.database.getReference("user_role/tutor/${pelamar.id_transaksi}/perguruan_tinggi")
+                    perguruanTinggi.addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshotPerguruanTinggi: DataSnapshot) {
+                            if (dataSnapshotPerguruanTinggi.exists()) {
+                                val jurusan = Database.database.getReference("user_role/tutor/${pelamar.id_transaksi}/jurusan")
+                                jurusan.addValueEventListener(object : ValueEventListener {
+                                    override fun onDataChange(dataSnapshotJurusan: DataSnapshot) {
+                                        if (dataSnapshotJurusan.exists()) {
+                                            view.findViewById<TextView>(R.id.tvNamaTutor).text = "${dataSnapshotNamaTutor.value}"
+                                            view.findViewById<TextView>(R.id.tvPerguruanTinggi).text = "${dataSnapshotPerguruanTinggi.value}"
+                                            view.findViewById<TextView>(R.id.tvJurusan).text = "${dataSnapshotJurusan.value}"
+                                        }
+                                    }
+                                    override fun onCancelled(databaseError: DatabaseError) {}
+                                })
                             }
-                            override fun onCancelled(databaseError: DatabaseError) {}
-                        })
-                    }
-                    override fun onCancelled(databaseError: DatabaseError) {}
-                })
+                        }
+                        override fun onCancelled(databaseError: DatabaseError) {}
+                    })
+                }
             }
             override fun onCancelled(databaseError: DatabaseError) {}
         })

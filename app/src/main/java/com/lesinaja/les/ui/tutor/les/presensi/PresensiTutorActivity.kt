@@ -1,9 +1,7 @@
 package com.lesinaja.les.ui.tutor.les.presensi
 
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.annotation.RequiresApi
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -13,7 +11,6 @@ import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.presensi.Presensi
 import com.lesinaja.les.databinding.ActivityPresensiTutorBinding
 import com.lesinaja.les.ui.header.ToolbarFragment
-import com.lesinaja.les.ui.walimurid.les.presensi.PresensiAdapter
 
 class PresensiTutorActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPresensiTutorBinding
@@ -26,7 +23,6 @@ class PresensiTutorActivity : AppCompatActivity() {
         const val EXTRA_JUMLAHPERTEMUAN = "jumlah_pertemuan"
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPresensiTutorBinding.inflate(layoutInflater)
@@ -84,14 +80,12 @@ class PresensiTutorActivity : AppCompatActivity() {
                                     }
                                     binding.lvPresensi.adapter = PresensiTutorAdapter(this@PresensiTutorActivity, R.layout.item_presensi, presensiList)
                                 }
-
                                 override fun onCancelled(error: DatabaseError) {}
                             })
                         }
                     }
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {}
         })
     }

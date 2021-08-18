@@ -1,13 +1,16 @@
 package com.lesinaja.les.ui.walimurid.les.presensi
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityLaporanBinding
 import com.lesinaja.les.ui.header.ToolbarFragment
+import com.lesinaja.les.ui.walimurid.les.LesActivity
 
 class LaporanActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLaporanBinding
@@ -72,13 +75,25 @@ class LaporanActivity : AppCompatActivity() {
                     }
                 }
             }
-
             override fun onCancelled(databaseError: DatabaseError) {}
         })
     }
 
     private fun updateLaporan() {
-        Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/komentar_walimurid").setValue(binding.etLaporanWaliMurid.text.toString())
-        Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/rating_tutor").setValue(binding.ratingTutor.rating)
+        if (binding.etLaporanWaliMurid.text.toString().trim() != "") {
+            Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/komentar_walimurid").setValue(binding.etLaporanWaliMurid.text.toString().trim())
+            Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/rating_tutor").setValue(binding.ratingTutor.rating)
+            Toast.makeText(this, "berhasil input laporan", Toast.LENGTH_SHORT).show()
+            goToLes()
+        } else {
+            Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun goToLes() {
+        Intent(this, LesActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(it)
+        }
     }
 }

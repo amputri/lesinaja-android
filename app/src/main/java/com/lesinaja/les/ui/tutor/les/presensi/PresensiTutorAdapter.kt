@@ -2,25 +2,14 @@ package com.lesinaja.les.ui.tutor.les.presensi
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import androidx.annotation.RequiresApi
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.R
-import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.presensi.Presensi
-import com.lesinaja.les.ui.walimurid.les.presensi.LaporanActivity
-import com.lesinaja.les.ui.walimurid.les.presensi.UbahJadwalActivity
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 data class PresensiTutorAdapter(val mCtx : Context, val layoutResId : Int, val presensiList : List<Presensi>)
     : ArrayAdapter<Presensi>(mCtx, layoutResId, presensiList) {

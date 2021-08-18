@@ -9,7 +9,6 @@ import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.R
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
-import com.lesinaja.les.base.walimurid.DataSiswa
 import com.lesinaja.les.base.walimurid.SiswaKey
 import com.lesinaja.les.databinding.ActivitySiswaBinding
 
@@ -22,7 +21,23 @@ class SiswaActivity : AppCompatActivity() {
         binding = ActivitySiswaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnTambahSiswa.setOnClickListener {
+            goToTambahSiswa()
+        }
+
+        setListViewSiswa()
+    }
+
+    private fun goToTambahSiswa() {
+        Intent(this, TambahSiswaActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(it)
+        }
+    }
+
+    private fun setListViewSiswa() {
         siswaList = mutableListOf()
+
         val ref = Database.database.getReference("siswa").orderByChild("id_walimurid").equalTo(Autentikasi.auth.currentUser?.uid)
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -46,21 +61,7 @@ class SiswaActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
+            override fun onCancelled(error: DatabaseError) {}
         })
-
-        binding.btnTambahSiswa.setOnClickListener {
-            goToTambahSiswa()
-        }
-    }
-
-    private fun goToTambahSiswa() {
-        Intent(this, TambahSiswaActivity::class.java).also {
-            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(it)
-        }
     }
 }

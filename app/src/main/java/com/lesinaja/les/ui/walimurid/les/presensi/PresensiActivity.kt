@@ -1,21 +1,15 @@
 package com.lesinaja.les.ui.walimurid.les.presensi
 
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.annotation.RequiresApi
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.R
 import com.lesinaja.les.base.Database
-import com.lesinaja.les.base.walimurid.LesKey
 import com.lesinaja.les.base.walimurid.presensi.Presensi
 import com.lesinaja.les.databinding.ActivityPresensiBinding
 import com.lesinaja.les.ui.header.ToolbarFragment
-import com.lesinaja.les.ui.walimurid.les.LesAdapter
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class PresensiActivity : AppCompatActivity() {
@@ -34,9 +28,9 @@ class PresensiActivity : AppCompatActivity() {
         binding = ActivityPresensiBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        presensiList = mutableListOf()
-
         setToolbar("Presensi Les")
+
+        presensiList = mutableListOf()
 
         updateUI()
 
@@ -68,30 +62,30 @@ class PresensiActivity : AppCompatActivity() {
                         val presensi = Database.database.getReference("les_presensi/${h.key}")
                         presensi.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(snapshotPresensi: DataSnapshot) {
-                                for (i in snapshotPresensi.children) {
-                                    val presensiObject = Presensi(
-                                        h.key!!,
-                                        h.child("id_lessiswa").value.toString(),
-                                        binding.tvNamaSiswa.text.toString(),
-                                        binding.tvNamaLes.text.toString(),
-                                        binding.tvJumlahPertemuan.text.toString(),
-                                        h.child("id_tutor").value.toString(),
-                                        i.key!!,
-                                        i.child("waktu").value.toString().toLong()
-                                    )
-                                    if (presensiObject != null) {
-                                        presensiList.add(presensiObject)
+                                if (snapshotPresensi.exists()) {
+                                    for (i in snapshotPresensi.children) {
+                                        val presensiObject = Presensi(
+                                            h.key!!,
+                                            h.child("id_lessiswa").value.toString(),
+                                            binding.tvNamaSiswa.text.toString(),
+                                            binding.tvNamaLes.text.toString(),
+                                            binding.tvJumlahPertemuan.text.toString(),
+                                            h.child("id_tutor").value.toString(),
+                                            i.key!!,
+                                            i.child("waktu").value.toString().toLong()
+                                        )
+                                        if (presensiObject != null) {
+                                            presensiList.add(presensiObject)
+                                        }
                                     }
+                                    binding.lvPresensi.adapter = PresensiAdapter(this@PresensiActivity, R.layout.item_presensi, presensiList)
                                 }
-                                binding.lvPresensi.adapter = PresensiAdapter(this@PresensiActivity, R.layout.item_presensi, presensiList)
                             }
-
                             override fun onCancelled(error: DatabaseError) {}
                         })
                     }
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {}
         })
     }

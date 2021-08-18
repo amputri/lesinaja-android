@@ -2,25 +2,18 @@ package com.lesinaja.les.ui.walimurid.les.presensi
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.R
 import com.lesinaja.les.base.Database
-import com.lesinaja.les.base.walimurid.LesKey
 import com.lesinaja.les.base.walimurid.presensi.Presensi
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 data class PresensiAdapter(val mCtx : Context, val layoutResId : Int, val presensiList : List<Presensi>)
     : ArrayAdapter<Presensi>(mCtx, layoutResId, presensiList) {
@@ -42,21 +35,15 @@ data class PresensiAdapter(val mCtx : Context, val layoutResId : Int, val presen
                     val nama = Database.database.getReference("user/${dataSnapshotTutor.value}/nama")
                     nama.addValueEventListener(object : ValueEventListener {
                         override fun onDataChange(dataSnapshotNama: DataSnapshot) {
-                            if (dataSnapshotTutor.exists()) {
+                            if (dataSnapshotNama.exists()) {
                                 view.findViewById<TextView>(R.id.tvTutor).text = "Tutor: ${dataSnapshotNama.value}"
                             }
                         }
-
-                        override fun onCancelled(databaseError: DatabaseError) {
-
-                        }
+                        override fun onCancelled(databaseError: DatabaseError) {}
                     })
                 }
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
 
         view.findViewById<TextView>(R.id.btnLaporan).setOnClickListener {

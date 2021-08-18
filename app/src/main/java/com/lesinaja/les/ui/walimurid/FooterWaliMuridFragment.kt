@@ -77,17 +77,13 @@ class FooterWaliMuridFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         val ref = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/wali_murid")
-
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.getValue() != true && activity?.javaClass?.simpleName != "AkunWaliMuridActivity") {
                     goToAkun()
                 }
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
     }
 

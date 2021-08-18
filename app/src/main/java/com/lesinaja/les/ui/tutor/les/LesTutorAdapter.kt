@@ -2,7 +2,6 @@ package com.lesinaja.les.ui.tutor.les
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -10,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -45,10 +43,7 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
                                         view.findViewById<TextView>(R.id.tvJumlahPertemuan).text = "${dataSnapshotPaket.value} pertemuan"
                                         view.findViewById<TextView>(R.id.tvNamaLes).text = "${dataSnapshotMapel.value} ${dataSnapshotJenjang.value}"
                                     }
-
-                                    override fun onCancelled(databaseError: DatabaseError) {
-
-                                    }
+                                    override fun onCancelled(databaseError: DatabaseError) {}
                                 })
                             }
                             override fun onCancelled(databaseError: DatabaseError) {}
@@ -71,17 +66,11 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
                                 view.findViewById<TextView>(R.id.tvTutor).text = "Siswa: ${dataSnapshotNama.value}"
                             }
                         }
-
-                        override fun onCancelled(databaseError: DatabaseError) {
-
-                        }
+                        override fun onCancelled(databaseError: DatabaseError) {}
                     })
                 }
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
 
         view.findViewById<TextView>(R.id.tvTanggalMulai).text = "Mulai: "+SimpleDateFormat("EEEE, dd MMMM yyyy").format(les.waktu_mulai[0])
@@ -97,10 +86,7 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
                         dataSnapshotSiswa.value.toString()
                     )
                 }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-
-                }
+                override fun onCancelled(databaseError: DatabaseError) {}
             })
         }
 
@@ -117,7 +103,6 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
                         dataSnapshotSiswa.value.toString()
                     )
                 }
-
                 override fun onCancelled(databaseError: DatabaseError) {}
             })
         }

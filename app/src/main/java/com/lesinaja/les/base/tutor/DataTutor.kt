@@ -7,5 +7,6 @@ data class DataTutor(
     var pengalaman_mengajar: String,
     var link_microteaching: String,
     var bank: String,
-    var nomor_rekening: String
+    var nomor_rekening: String,
+    var link_foto: String
 )

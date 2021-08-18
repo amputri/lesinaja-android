@@ -1,23 +1,15 @@
 package com.lesinaja.les.ui.tutor.les
 
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View.GONE
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityDetailLowonganBinding
 import com.lesinaja.les.ui.header.ToolbarFragment
-import com.lesinaja.les.ui.tutor.lowongan.LowonganActivity
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class DetailLesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailLowonganBinding
@@ -40,9 +32,9 @@ class DetailLesActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        listJadwal = arrayOf()
-
         setToolbar("Detail Les")
+
+        listJadwal = arrayOf()
 
         binding.tvJadwal.text = ""
 
@@ -159,10 +151,7 @@ class DetailLesActivity : AppCompatActivity() {
                     binding.tvJadwal.text = binding.tvJadwal.text.toString()+ SimpleDateFormat("EEEE").format(dataSnapshot.child("${i}").value.toString().toLong())+", jam "+ SimpleDateFormat("hh:mm aaa").format(dataSnapshot.child("${i}").value.toString().toLong())+"\n"
                 }
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
     }
 }

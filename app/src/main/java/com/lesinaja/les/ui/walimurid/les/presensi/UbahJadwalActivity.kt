@@ -2,19 +2,18 @@ package com.lesinaja.les.ui.walimurid.les.presensi
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.os.Build
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.widget.DatePicker
 import android.widget.TimePicker
-import androidx.annotation.RequiresApi
+import android.widget.Toast
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityUbahJadwalBinding
 import com.lesinaja.les.ui.header.ToolbarFragment
+import com.lesinaja.les.ui.walimurid.les.LesActivity
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener,
@@ -85,6 +84,7 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         day = calendar.get(Calendar.DAY_OF_MONTH)
         month = calendar.get(Calendar.MONTH)
         year = calendar.get(Calendar.YEAR)
+
         val datePickerDialog = DatePickerDialog(this, this, year, month,day)
         datePickerDialog.show()
     }
@@ -93,11 +93,12 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         myDay = dayOfMonth
         myYear = year
         myMonth = month
+
         val calendar: Calendar = Calendar.getInstance()
         hour = calendar.get(Calendar.HOUR)
         minute = calendar.get(Calendar.MINUTE)
-        val timePickerDialog = TimePickerDialog(this, this, hour, minute,
-            DateFormat.is24HourFormat(this))
+
+        val timePickerDialog = TimePickerDialog(this, this, hour, minute, DateFormat.is24HourFormat(this))
         timePickerDialog.show()
     }
 
@@ -111,6 +112,19 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
     }
 
     private fun updateJadwal() {
-        Database.database.getReference("les_presensi/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/waktu").setValue(dateTime)
+        if (dateTime > 0) {
+            Database.database.getReference("les_presensi/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/waktu").setValue(dateTime)
+            Toast.makeText(this, "berhasil ubah jadwal", Toast.LENGTH_SHORT).show()
+            goToLes()
+        } else {
+            Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun goToLes() {
+        Intent(this, LesActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(it)
+        }
     }
 }

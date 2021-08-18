@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
 
         if (Autentikasi.auth.currentUser != null) {
             val ref = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/login_terakhir")
-
             ref.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.getValue().toString() == "wali_murid") {
@@ -33,10 +32,7 @@ class MainActivity : AppCompatActivity() {
                                     goToBerandaWaliMurid()
                                 }
                             }
-
-                            override fun onCancelled(databaseError: DatabaseError) {
-
-                            }
+                            override fun onCancelled(databaseError: DatabaseError) {}
                         })
                     } else if (dataSnapshot.getValue().toString() == "tutor") {
                         val profileTutor = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/tutor")
@@ -48,17 +44,11 @@ class MainActivity : AppCompatActivity() {
                                     goToBerandaTutor()
                                 }
                             }
-
-                            override fun onCancelled(databaseError: DatabaseError) {
-
-                            }
+                            override fun onCancelled(databaseError: DatabaseError) {}
                         })
                     }
                 }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-
-                }
+                override fun onCancelled(databaseError: DatabaseError) {}
             })
         } else {
             goToBerandaUmum()

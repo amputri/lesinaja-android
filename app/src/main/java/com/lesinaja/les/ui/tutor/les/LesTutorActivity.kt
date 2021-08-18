@@ -10,7 +10,6 @@ import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.LesKey
 import com.lesinaja.les.databinding.ActivityLesTutorBinding
-import com.lesinaja.les.ui.walimurid.les.LesAdapter
 
 class LesTutorActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLesTutorBinding
@@ -56,18 +55,12 @@ class LesTutorActivity : AppCompatActivity() {
                                     binding.lvLes.adapter = adapter
                                 }
                             }
-
-                            override fun onCancelled(error: DatabaseError) {
-                                TODO("Not yet implemented")
-                            }
+                            override fun onCancelled(error: DatabaseError) {}
                         })
                     }
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
     }
 }

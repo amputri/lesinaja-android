@@ -16,7 +16,6 @@ import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.R
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
-import com.lesinaja.les.controller.umum.UserController
 import com.lesinaja.les.databinding.ActivityAkunUmumBinding
 import com.lesinaja.les.ui.tutor.akun.AkunTutorActivity
 import com.lesinaja.les.ui.tutor.beranda.BerandaTutorActivity
@@ -44,11 +43,9 @@ class AkunUmumActivity : AppCompatActivity(), View.OnClickListener {
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
-
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         binding.btnMasukWaliMurid.setOnClickListener(this)
-
         binding.btnMasukTutor.setOnClickListener(this)
     }
 
@@ -104,37 +101,41 @@ class AkunUmumActivity : AppCompatActivity(), View.OnClickListener {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     if (role == "wali_murid") {
-                        UserController().changeSession(Autentikasi.auth.currentUser?.uid!!, "wali_murid")
-                        val profileWaliMurid = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/wali_murid")
-                        profileWaliMurid.addValueEventListener(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshotWaliMurid: DataSnapshot) {
-                                if (dataSnapshotWaliMurid.getValue() != true) {
-                                    goToAkunWaliMurid()
-                                } else {
-                                    goToBerandaWaliMurid()
-                                }
+                        Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid!!}/login_terakhir").setValue("wali_murid")
+                            .addOnSuccessListener {
+                                val profileWaliMurid = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/wali_murid")
+                                profileWaliMurid.addValueEventListener(object : ValueEventListener {
+                                    override fun onDataChange(dataSnapshotWaliMurid: DataSnapshot) {
+                                        if (dataSnapshotWaliMurid.getValue() != true) {
+                                            goToAkunWaliMurid()
+                                        } else {
+                                            goToBerandaWaliMurid()
+                                        }
+                                    }
+                                    override fun onCancelled(databaseError: DatabaseError) {}
+                                })
                             }
-
-                            override fun onCancelled(databaseError: DatabaseError) {
-
+                            .addOnFailureListener {
+                                Toast.makeText(this, "gagal masuk sebagai wali murid", Toast.LENGTH_SHORT).show()
                             }
-                        })
                     } else {
-                        UserController().changeSession(Autentikasi.auth.currentUser?.uid!!, "tutor")
-                        val profileTutor = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/tutor")
-                        profileTutor.addValueEventListener(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshotTutor: DataSnapshot) {
-                                if (dataSnapshotTutor.getValue() != true) {
-                                    goToAkunTutor()
-                                } else {
-                                    goToBerandaTutor()
-                                }
+                        Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid!!}/login_terakhir").setValue("tutor")
+                            .addOnSuccessListener {
+                                val profileTutor = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/tutor")
+                                profileTutor.addValueEventListener(object : ValueEventListener {
+                                    override fun onDataChange(dataSnapshotTutor: DataSnapshot) {
+                                        if (dataSnapshotTutor.getValue() != true) {
+                                            goToAkunTutor()
+                                        } else {
+                                            goToBerandaTutor()
+                                        }
+                                    }
+                                    override fun onCancelled(databaseError: DatabaseError) {}
+                                })
                             }
-
-                            override fun onCancelled(databaseError: DatabaseError) {
-
+                            .addOnFailureListener {
+                                Toast.makeText(this, "gagal masuk sebagai tutor", Toast.LENGTH_SHORT).show()
                             }
-                        })
                     }
                 } else {
                     Toast.makeText(applicationContext, "gagal mendapat kredensial", Toast.LENGTH_SHORT).show()

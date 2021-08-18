@@ -20,7 +20,6 @@ import com.lesinaja.les.ui.tutor.akun.AkunTutorActivity
 import com.lesinaja.les.ui.tutor.beranda.BerandaTutorActivity
 import com.lesinaja.les.ui.tutor.les.LesTutorActivity
 import com.lesinaja.les.ui.tutor.lowongan.LowonganActivity
-import com.lesinaja.les.ui.walimurid.les.LesActivity
 
 class FooterTutorFragment : Fragment() {
     private var _binding: FragmentFooterTutorBinding? = null
@@ -72,17 +71,13 @@ class FooterTutorFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         val ref = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/tutor")
-
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.getValue() != true && activity?.javaClass?.simpleName != "AkunTutorActivity") {
                     goToAkun()
                 }
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
     }
 

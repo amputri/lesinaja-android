@@ -55,7 +55,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Nama Siswa"
                 android:textStyle="bold" />
 
             <TextView
@@ -77,7 +76,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="@color/orange"
-                android:text="Rencana Jadwal Mulai sepekan"
+                android:drawableLeft="@drawable/ic_tambah"
+                android:text="Jadwal dan Tanggal Mulai"
                 android:textAllCaps="false"
                 android:textColor="@color/white" />
 
@@ -143,8 +143,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:textStyle="bold"
-                android:text="Biaya Pendaftaran : 200000" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textUnggah"

@@ -59,7 +59,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Siswa: Anggun Hanna Attaya"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -80,21 +79,18 @@
                         android:id="@+id/tvNamaLes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bahasa Inggris 3 SD"
                         android:textColor="@color/black" />
 
                     <TextView
                         android:id="@+id/tvJumlahPertemuan"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Paket 1 (8 Pertemuan)"
                         android:textColor="@color/black" />
 
                     <TextView
                         android:id="@+id/tvNamaTutor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hamdan, S.Kom"
                         android:textColor="@color/black" />
                 </androidx.gridlayout.widget.GridLayout>
 
@@ -113,15 +109,13 @@
                         android:id="@+id/tvPertemuan"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pertemuan ke-1"
                         android:textColor="@color/orange"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvTanggal"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Selasa, 3 Agustus 2021 (09:00 - 10:00)" />
+                        android:layout_height="wrap_content" />
                 </androidx.gridlayout.widget.GridLayout>
 
                 <androidx.gridlayout.widget.GridLayout

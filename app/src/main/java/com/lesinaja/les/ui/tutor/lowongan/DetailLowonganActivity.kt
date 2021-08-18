@@ -102,8 +102,8 @@ class DetailLowonganActivity : AppCompatActivity() {
                                                                     provinsi.addValueEventListener(object : ValueEventListener {
                                                                         override fun onDataChange(dataSnapshotProvinsi: DataSnapshot) {
                                                                             if (dataSnapshotProvinsi.exists()) {
-                                                                                binding.tvAlamat.text = "${dataSnapshotWaliMurid.child("alamat_rumah").value}, ${dataSnapshotDesa.value}, ${dataSnapshotKecamatan.value}, ${dataSnapshotKabupaten.value}, ${dataSnapshotProvinsi.value}"
-                                                                                binding.tvTelepon.text = dataSnapshotWaliMurid.child("telepon").value.toString()
+                                                                                binding.tvAlamat.text = "${dataSnapshotDesa.value}, ${dataSnapshotKecamatan.value}, ${dataSnapshotKabupaten.value}, ${dataSnapshotProvinsi.value}"
+                                                                                binding.tvTelepon.text = "xxxxxxxx"
                                                                             }
                                                                         }
                                                                         override fun onCancelled(error: DatabaseError) {}

@@ -64,18 +64,12 @@
                     android:id="@+id/btnUbahFoto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:text="Ganti Foto Profil"
+                    android:layout_margin="16dp"
+                    android:backgroundTint="@color/orange"
+                    android:text="Simpan Foto Profil"
                     android:textAllCaps="false"
-                    android:enabled="false"
-                    android:textColor="@color/orange"
-                    app:backgroundTint="@color/white"
-                    app:layout_gravity="center_horizontal|fill_horizontal|center_vertical"
-                    app:strokeColor="@color/orange"
-                    app:strokeWidth="2dp" />
+                    app:layout_gravity="fill_horizontal|center_vertical" />
+
             </androidx.gridlayout.widget.GridLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -95,7 +89,6 @@
                     android:focusable="false"
                     android:paddingStart="0dp"
                     android:paddingEnd="0dp"
-                    android:text="mail@mail.com"
                     android:textCursorDrawable="@drawable/black_cursor" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -297,7 +290,8 @@
                 android:text="Pilih Pelajaran Ahli"
                 android:textAlignment="viewStart"
                 android:textAllCaps="false"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:gravity="start" />
 
             <Button
                 android:id="@+id/btnJenjangAhli"
@@ -309,7 +303,8 @@
                 android:text="Pilih Jenjang Ahli"
                 android:textAlignment="viewStart"
                 android:textAllCaps="false"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:gravity="start" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textPengalamanMengajar"

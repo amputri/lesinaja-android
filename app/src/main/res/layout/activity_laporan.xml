@@ -59,7 +59,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Siswa: Anggun Hanna Attaya"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -79,20 +78,17 @@
                     <TextView
                         android:id="@+id/tvNamaLes"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Les: " />
+                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/tvJumlahPertemuan"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pertemuan: " />
+                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/tvNamaTutor"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tutor: " />
+                        android:layout_height="wrap_content" />
 
                 </androidx.gridlayout.widget.GridLayout>
 
@@ -110,26 +106,22 @@
                         android:id="@+id/btnTanggal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Senin, 2 Agustus 2021 (09:00-10:00)"
                         app:backgroundTint="@color/green" />
 
                     <TextView
                         android:id="@+id/tvPertemuan"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pertemuan ke-1" />
+                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/tvMateri"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Materi: Pengenalan Peribahasa" />
+                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/tvLaporanTutor"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Laporan: blablablalaaa" />
+                        android:layout_height="wrap_content" />
 
                 </androidx.gridlayout.widget.GridLayout>
 

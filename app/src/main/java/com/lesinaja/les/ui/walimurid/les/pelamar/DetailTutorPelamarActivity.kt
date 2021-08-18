@@ -2,28 +2,21 @@ package com.lesinaja.les.ui.walimurid.les.pelamar
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.os.Build
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.lesinaja.les.R
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityDetailTutorPelamarBinding
 import com.lesinaja.les.ui.header.ToolbarFragment
-import com.lesinaja.les.ui.tutor.lowongan.DetailLowonganActivity
 import com.lesinaja.les.ui.walimurid.les.LesActivity
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class DetailTutorPelamarActivity : AppCompatActivity() {
@@ -47,9 +40,12 @@ class DetailTutorPelamarActivity : AppCompatActivity() {
         binding = ActivityDetailTutorPelamarBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        updateUI()
         controlButton()
 
-        updateUI()
+        binding.tvLinkMicroteaching.setOnClickListener {
+            openLink()
+        }
 
         binding.btnPilihTutor.setOnClickListener {
             pilihTutor()
@@ -89,6 +85,12 @@ class DetailTutorPelamarActivity : AppCompatActivity() {
         })
     }
 
+    private fun openLink() {
+        val openURL = Intent(Intent.ACTION_VIEW)
+        openURL.data = Uri.parse(binding.tvLinkMicroteaching.text.toString())
+        startActivity(openURL)
+    }
+
     private fun loadUser() {
         val user = Database.database.getReference("user/${intent.getStringExtra(EXTRA_IDPELAMAR)}")
         user.addValueEventListener(object : ValueEventListener {
@@ -115,9 +117,14 @@ class DetailTutorPelamarActivity : AppCompatActivity() {
                                                         provinsi.addValueEventListener(object : ValueEventListener {
                                                             override fun onDataChange(dataSnapshotProvinsi: DataSnapshot) {
                                                                 if (dataSnapshotProvinsi.exists()) {
-                                                                    binding.tvAlamat.text = "${dataSnapshotUser.child("kontak").child("alamat_rumah").value}, ${dataSnapshotDesa.value}, ${dataSnapshotKecamatan.value}, ${dataSnapshotKabupaten.value}, ${dataSnapshotProvinsi.value}"
                                                                     binding.tvTelepon.text = dataSnapshotUser.child("kontak").child("telepon").value.toString()
                                                                     binding.tvNamaTutor.text = dataSnapshotUser.child("nama").value.toString()
+
+                                                                    if (dataSnapshotUser.key == intent.getStringExtra(EXTRA_IDPELAMAR)) {
+                                                                        binding.tvAlamat.text = "${dataSnapshotUser.child("kontak").child("alamat_rumah").value}, ${dataSnapshotDesa.value}, ${dataSnapshotKecamatan.value}, ${dataSnapshotKabupaten.value}, ${dataSnapshotProvinsi.value}"
+                                                                    } else {
+                                                                        binding.tvAlamat.text = "${dataSnapshotDesa.value}, ${dataSnapshotKecamatan.value}, ${dataSnapshotKabupaten.value}, ${dataSnapshotProvinsi.value}"
+                                                                    }
                                                                 }
                                                             }
                                                             override fun onCancelled(error: DatabaseError) {}
@@ -193,6 +200,7 @@ class DetailTutorPelamarActivity : AppCompatActivity() {
                         setToolbar("Detail Tutor")
                     } else {
                         binding.btnPilihTutor.visibility = VISIBLE
+                        binding.tvTelepon.text = "xxxxxxxx"
                         setToolbar("Detail Tutor Pelamar")
                     }
                 }

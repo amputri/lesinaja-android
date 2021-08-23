@@ -35,7 +35,7 @@ class LowonganActivity : AppCompatActivity() {
                             if (dataSnapshotGender.exists()) {
                                 lesList.clear()
 
-                                val refBebas = Database.database.getReference("les_siswa").orderByChild("wilayah_status").equalTo("${dataSnapshot.value.toString().substring(0,4)}_b_apply")
+                                val refBebas = Database.database.getReference("les_siswa").orderByChild("wilayah_preferensi").equalTo("${dataSnapshot.value.toString().substring(0,4)}_bebas")
                                 refBebas.addValueEventListener(object : ValueEventListener {
                                     override fun onDataChange(snapshotBebas: DataSnapshot) {
                                         if (snapshotBebas.exists()) {
@@ -65,9 +65,9 @@ class LowonganActivity : AppCompatActivity() {
 
                                 lateinit var ref: Query
                                 if (dataSnapshotGender.value.toString() == "laki-laki") {
-                                    ref = Database.database.getReference("les_siswa").orderByChild("wilayah_status").equalTo("${dataSnapshot.value.toString().substring(0,4)}_l_apply")
+                                    ref = Database.database.getReference("les_siswa").orderByChild("wilayah_preferensi").equalTo("${dataSnapshot.value.toString().substring(0,4)}_laki-laki")
                                 } else if (dataSnapshotGender.value.toString() == "perempuan") {
-                                    ref = Database.database.getReference("les_siswa").orderByChild("wilayah_status").equalTo("${dataSnapshot.value.toString().substring(0,4)}_p_apply")
+                                    ref = Database.database.getReference("les_siswa").orderByChild("wilayah_preferensi").equalTo("${dataSnapshot.value.toString().substring(0,4)}_perempuan")
                                 }
                                 ref.addValueEventListener(object : ValueEventListener {
                                     override fun onDataChange(snapshot: DataSnapshot) {

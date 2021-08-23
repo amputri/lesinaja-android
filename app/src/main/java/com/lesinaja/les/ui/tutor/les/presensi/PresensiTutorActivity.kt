@@ -1,7 +1,9 @@
 package com.lesinaja.les.ui.tutor.les.presensi
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -10,7 +12,7 @@ import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.presensi.Presensi
 import com.lesinaja.les.databinding.ActivityPresensiTutorBinding
-import com.lesinaja.les.ui.header.ToolbarFragment
+import com.lesinaja.les.ui.tutor.les.LesTutorActivity
 
 class PresensiTutorActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPresensiTutorBinding
@@ -30,20 +32,13 @@ class PresensiTutorActivity : AppCompatActivity() {
 
         presensiList = mutableListOf()
 
-        setToolbar("Presensi Les")
+        binding.btnKembali.setOnClickListener {
+            goToLes()
+        }
 
         updateUI()
 
         setListView()
-    }
-
-    private fun setToolbar(judul: String) {
-        val toolbarFragment = ToolbarFragment()
-        val bundle = Bundle()
-
-        bundle.putString("judul", judul)
-        toolbarFragment.arguments = bundle
-        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -88,5 +83,12 @@ class PresensiTutorActivity : AppCompatActivity() {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun goToLes() {
+        Intent(this, LesTutorActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(it)
+        }
     }
 }

@@ -8,22 +8,6 @@ import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.walimurid.DataSiswa
 
 class DataSiswaController {
-    fun getNewKey(): String {
-        return Database.database.getReference("siswa").push().key!!
-    }
-
-    fun changeDataSiswa(dataSiswa: DataSiswa, key: String) {
-        Database.database.getReference("siswa/${key}").setValue(dataSiswa)
-        Database.database.getReference("siswa/${key}/walimurid_status").setValue("${dataSiswa.id_walimurid}")
-    }
-
-    fun changeDataSiswaUpdate(dataSiswa: DataSiswa, key: String) {
-        Database.database.getReference("siswa/${key}/id_jenjangkelas").setValue(dataSiswa.id_jenjangkelas)
-        Database.database.getReference("siswa/${key}/id_walimurid").setValue(dataSiswa.id_walimurid)
-        Database.database.getReference("siswa/${key}/nama").setValue(dataSiswa.nama)
-        Database.database.getReference("siswa/${key}/sekolah").setValue(dataSiswa.sekolah)
-    }
-
     fun getJenjang(idJenjang: String, namaJenjang: String): ArrayList<Wilayah> {
         val jenjang = ArrayList<Wilayah>()
         jenjang.add(Wilayah(idJenjang, namaJenjang))

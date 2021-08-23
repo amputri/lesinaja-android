@@ -22,6 +22,7 @@ class LesActivity : AppCompatActivity() {
     private lateinit var lesList : MutableList<LesKey>
 
     var idSiswa: String = ""
+    var biayaDaftar: String = ""
     var namaSiswa: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +47,7 @@ class LesActivity : AppCompatActivity() {
         Intent(this, TambahLesActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
             it.putExtra(TambahLesActivity.EXTRA_IDSISWA, idSiswa)
+            it.putExtra(TambahLesActivity.EXTRA_BIAYADAFTAR, biayaDaftar)
             it.putExtra(TambahLesActivity.EXTRA_NAMASISWA, namaSiswa)
             startActivity(it)
         }
@@ -72,9 +74,7 @@ class LesActivity : AppCompatActivity() {
                             h.child("preferensi_tutor").value.toString(),
                             waktuMulai
                         )
-                        if (les != null) {
-                            lesList.add(les)
-                        }
+                        lesList.add(les)
                     }
 
                     val adapter = LesAdapter(this@LesActivity, com.lesinaja.les.R.layout.item_les, lesList)
@@ -89,11 +89,11 @@ class LesActivity : AppCompatActivity() {
         var siswa = ArrayList<Wilayah>()
         siswa.add(Wilayah("0", "pilih siswa"))
 
-        val ref = Database.database.getReference("siswa").orderByChild("walimurid_status").equalTo("${Autentikasi.auth.currentUser?.uid}_daftar")
+        val ref = Database.database.getReference("siswa").orderByChild("id_walimurid").equalTo("${Autentikasi.auth.currentUser?.uid}")
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (h in dataSnapshot.children) {
-                    siswa.add(Wilayah(h.key!!, h.child("nama").getValue() as String))
+                    siswa.add(Wilayah("${h.key}//${h.child("biaya_daftar").value}", h.child("nama").getValue() as String))
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {}
@@ -109,7 +109,8 @@ class LesActivity : AppCompatActivity() {
             override fun onNothingSelected(p0: AdapterView<*>?) {}
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                 val selectedObject = binding.spinSiswa.selectedItem as Wilayah
-                idSiswa = selectedObject.id
+                idSiswa = selectedObject.id.substringBefore("//")
+                biayaDaftar = selectedObject.id.substringAfter("//")
                 namaSiswa = selectedObject.nama
 
                 setListView()

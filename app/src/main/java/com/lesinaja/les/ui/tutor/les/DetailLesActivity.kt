@@ -1,14 +1,15 @@
 package com.lesinaja.les.ui.tutor.les
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View.GONE
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityDetailLowonganBinding
-import com.lesinaja.les.ui.header.ToolbarFragment
 import java.text.SimpleDateFormat
 
 class DetailLesActivity : AppCompatActivity() {
@@ -32,7 +33,10 @@ class DetailLesActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        setToolbar("Detail Les")
+        binding.tvJudul.text = "Detail Les"
+        binding.btnKembali.setOnClickListener {
+            goToLes()
+        }
 
         listJadwal = arrayOf()
 
@@ -41,15 +45,6 @@ class DetailLesActivity : AppCompatActivity() {
         updateUI()
 
         binding.btnAmbilLowongan.visibility = GONE
-    }
-
-    private fun setToolbar(judul: String) {
-        val toolbarFragment = ToolbarFragment()
-        val bundle = Bundle()
-
-        bundle.putString("judul", judul)
-        toolbarFragment.arguments = bundle
-        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -153,5 +148,12 @@ class DetailLesActivity : AppCompatActivity() {
             }
             override fun onCancelled(databaseError: DatabaseError) {}
         })
+    }
+
+    private fun goToLes() {
+        Intent(this, LesTutorActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(it)
+        }
     }
 }

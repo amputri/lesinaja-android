@@ -9,13 +9,12 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityLaporanTutorBinding
-import com.lesinaja.les.ui.header.ToolbarFragment
-import com.lesinaja.les.ui.tutor.les.LesTutorActivity
 
 class LaporanTutorActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLaporanTutorBinding
 
     companion object {
+        const val EXTRA_IDLESSISWA = "id_les_siswa"
         const val EXTRA_IDLESSISWATUTOR = "id_les_siswa_tutor"
         const val EXTRA_IDPRESENSI = "id_presensi"
         const val EXTRA_NAMASISWA = "nama_siswa"
@@ -31,22 +30,15 @@ class LaporanTutorActivity : AppCompatActivity() {
         binding = ActivityLaporanTutorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setToolbar("Laporan Les")
+        binding.btnKembali.setOnClickListener {
+            goToPresensi()
+        }
 
         updateUI()
 
         binding.btnKirimLaporan.setOnClickListener {
             updateLaporan()
         }
-    }
-
-    private fun setToolbar(judul: String) {
-        val toolbarFragment = ToolbarFragment()
-        val bundle = Bundle()
-
-        bundle.putString("judul", judul)
-        toolbarFragment.arguments = bundle
-        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -83,15 +75,19 @@ class LaporanTutorActivity : AppCompatActivity() {
             Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/materi").setValue(binding.tvMateri.text.toString().trim())
             Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/laporan_tutor").setValue(binding.tvLaporanTutor.text.toString().trim())
             Toast.makeText(this, "berhasil input laporan", Toast.LENGTH_SHORT).show()
-            goToLes()
+            goToPresensi()
         } else {
             Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun goToLes() {
-        Intent(this, LesTutorActivity::class.java).also {
+    private fun goToPresensi() {
+        Intent(this, PresensiTutorActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(PresensiTutorActivity.EXTRA_IDLESSISWA, intent.getStringExtra(EXTRA_IDLESSISWA))
+            it.putExtra(PresensiTutorActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA))
+            it.putExtra(PresensiTutorActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES))
+            it.putExtra(PresensiTutorActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN))
             startActivity(it)
         }
     }

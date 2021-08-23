@@ -50,6 +50,7 @@ data class PresensiTutorAdapter(val mCtx : Context, val layoutResId : Int, val p
     private fun goToLaporan(presensi: Presensi, tanggal: String, jam: String, namaTutor: String) {
         Intent(mCtx, LaporanTutorActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(LaporanTutorActivity.EXTRA_IDLESSISWA, presensi.id_lessiswa)
             it.putExtra(LaporanTutorActivity.EXTRA_IDLESSISWATUTOR, presensi.id_lessiswatutor)
             it.putExtra(LaporanTutorActivity.EXTRA_IDPRESENSI, presensi.id_presensi)
             it.putExtra(LaporanTutorActivity.EXTRA_NAMASISWA, presensi.nama_siswa)
@@ -65,6 +66,7 @@ data class PresensiTutorAdapter(val mCtx : Context, val layoutResId : Int, val p
     private fun goToUbahJadwal(presensi: Presensi, tanggal: String, jam: String, namaTutor: String) {
         Intent(mCtx, UbahJadwalTutorActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(UbahJadwalTutorActivity.EXTRA_IDLESSISWA, presensi.id_lessiswa)
             it.putExtra(UbahJadwalTutorActivity.EXTRA_IDLESSISWATUTOR, presensi.id_lessiswatutor)
             it.putExtra(UbahJadwalTutorActivity.EXTRA_IDPRESENSI, presensi.id_presensi)
             it.putExtra(UbahJadwalTutorActivity.EXTRA_NAMASISWA, presensi.nama_siswa)

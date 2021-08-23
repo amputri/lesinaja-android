@@ -29,6 +29,7 @@
             android:id="@+id/btnBeranda"
             style="?android:attr/borderlessButtonStyle"
             android:drawableTop="@drawable/ic_beranda"
+            android:minWidth="0dp"
             android:padding="0dp"
             android:text="Beranda"
             android:textAllCaps="false"
@@ -40,10 +41,11 @@
             android:id="@+id/btnAkun"
             style="?android:attr/borderlessButtonStyle"
             android:drawableTop="@drawable/ic_akun"
+            android:minWidth="0dp"
             android:padding="0dp"
             android:text="Akun"
-            android:textColor="@color/brown"
             android:textAllCaps="false"
+            android:textColor="@color/brown"
             app:iconPadding="0dp"
             app:layout_columnWeight="1" />
 

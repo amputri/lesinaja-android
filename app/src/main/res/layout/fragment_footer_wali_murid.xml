@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    app:layout_constrainedWidth="true"
     tools:context=".ui.walimurid.FooterWaliMuridFragment">
 
     <androidx.gridlayout.widget.GridLayout
@@ -28,6 +29,7 @@
             android:id="@+id/btnBeranda"
             style="?android:attr/borderlessButtonStyle"
             android:drawableTop="@drawable/ic_beranda"
+            android:minWidth="0dp"
             android:padding="0dp"
             android:text="Beranda"
             android:textAllCaps="false"
@@ -39,6 +41,7 @@
             android:id="@+id/btnSiswa"
             style="?android:attr/borderlessButtonStyle"
             android:drawableTop="@drawable/ic_siswa"
+            android:minWidth="0dp"
             android:padding="0dp"
             android:text="Siswa"
             android:textAllCaps="false"
@@ -50,6 +53,7 @@
             android:id="@+id/btnLes"
             style="?android:attr/borderlessButtonStyle"
             android:drawableTop="@drawable/ic_les"
+            android:minWidth="0dp"
             android:padding="0dp"
             android:text="Les"
             android:textAllCaps="false"
@@ -61,10 +65,11 @@
             android:id="@+id/btnAkun"
             style="?android:attr/borderlessButtonStyle"
             android:drawableTop="@drawable/ic_akun"
+            android:minWidth="0dp"
             android:padding="0dp"
             android:text="Akun"
-            android:textColor="@color/brown"
             android:textAllCaps="false"
+            android:textColor="@color/brown"
             app:iconPadding="0dp"
             app:layout_columnWeight="1" />
 

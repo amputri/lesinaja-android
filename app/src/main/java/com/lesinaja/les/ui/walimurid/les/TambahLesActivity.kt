@@ -1,32 +1,22 @@
 package com.lesinaja.les.ui.walimurid.les
 
 import android.R
-import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.format.DateFormat
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.walimurid.DataLes
-import com.lesinaja.les.base.walimurid.Pembayaran
-import com.lesinaja.les.controller.walimurid.akun.DataLesController
-import com.lesinaja.les.controller.walimurid.akun.PembayaranController
 import com.lesinaja.les.databinding.ActivityTambahLesBinding
-import com.lesinaja.les.ui.header.ToolbarFragment
-import com.lesinaja.les.ui.tutor.akun.AkunTutorActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -34,12 +24,13 @@ import kotlin.collections.ArrayList
 class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener,
     TimePickerDialog.OnTimeSetListener {
     private lateinit var binding: ActivityTambahLesBinding
-    private lateinit var imageBitmap: Bitmap
 
     var idLes = ""
-    var keyLes = ""
-    var keyPembayaran = ""
     var gajiTutor = 0
+    var idKabupaten = ""
+    var biayaDaftar = 0
+    var biayaLes = 0
+    var total = 0
 
     var day = 0
     var month: Int = 0
@@ -57,9 +48,8 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
 
     companion object {
         const val EXTRA_IDSISWA = "id_siswa"
+        const val EXTRA_BIAYADAFTAR = "biaya_daftar"
         const val EXTRA_NAMASISWA = "nama_siswa"
-        const val REQUEST_GALLERY = 100
-        const val REQUEST_CAMERA = 101
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +57,11 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
         binding = ActivityTambahLesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setToolbar("Ambil Les")
+        binding.btnKembali.setOnClickListener {
+            goToLes()
+        }
+
+        updateUI()
 
         listJadwal = arrayOf()
 
@@ -79,29 +73,29 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
             showCalendar()
         }
 
-        binding.ivBukti.setOnClickListener {
-            openPhotoDialog()
-        }
-
         binding.btnTambahLes.setOnClickListener {
             if (validateInputData()) {
                 addLes()
-                uploadImage(imageBitmap, keyLes)
-                Toast.makeText(this, "berhasil ambil les", Toast.LENGTH_SHORT).show()
-                goToLes()
             } else {
                 Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun setToolbar(judul: String) {
-        val toolbarFragment = ToolbarFragment()
-        val bundle = Bundle()
-
-        bundle.putString("judul", judul)
-        toolbarFragment.arguments = bundle
-        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
+    private fun updateUI() {
+        val statusBayar = Database.database.getReference("siswa/${intent.getStringExtra(EXTRA_IDSISWA)}/status_bayar")
+        statusBayar.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshotBayar: DataSnapshot) {
+                if (dataSnapshotBayar.exists()) {
+                    if (dataSnapshotBayar.value.toString() != "true") {
+                        binding.tvBiayaDaftar.text = intent.getStringExtra(EXTRA_BIAYADAFTAR).toString()
+                    } else {
+                        binding.tvBiayaDaftar.text = "-"
+                    }
+                }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {}
+        })
     }
 
     private fun setLesAdapter() {
@@ -134,7 +128,7 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
                                                                             override fun onDataChange(dataSnapshotPaket: DataSnapshot) {
                                                                                 if (dataSnapshotPaket.exists()) {
                                                                                     les.add(Wilayah(
-                                                                                        "${h.key}//${h.child("biaya").value}**${h.child("gaji_tutor").value}",
+                                                                                        "${h.key}//${h.child("biaya").value.toString()}**${h.child("gaji_tutor").value.toString()}#${dataSnapshot.value.toString().substring(0,4)}",
                                                                                         "${dataSnapshotMapel.value} ${dataSnapshotJenjang.value} (${dataSnapshotPaket.value}x)"
                                                                                     ))
                                                                                 }
@@ -174,8 +168,16 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                 val selectedObject = binding.spinLes.selectedItem as Wilayah
                 idLes = selectedObject.id.substringBefore("//")
-                gajiTutor = selectedObject.id.substringAfter("**").toInt()
-                binding.textBiaya.text = "Biaya Pendaftaran: ${selectedObject.id.substringAfter("//").substringBefore("**")}"
+                gajiTutor = selectedObject.id.substringAfter("**").substringBefore("#").toInt()
+                idKabupaten =  selectedObject.id.substringAfter("#")
+
+                if (binding.tvBiayaDaftar.text.toString() != "-") {
+                    biayaDaftar = binding.tvBiayaDaftar.text.toString().toInt()
+                }
+                biayaLes = selectedObject.id.substringAfter("//").substringBefore("**").toInt()
+                total = biayaDaftar + biayaLes
+                binding.tvBiayaLes.text = biayaLes.toString()
+                binding.tvTotal.text = total.toString()
             }
         }
     }
@@ -213,47 +215,6 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
         binding.tvJadwal.text = binding.tvJadwal.text.toString()+SimpleDateFormat("EEEE, dd MMMM yyyy").format(dateTime)+" Jam "+SimpleDateFormat("hh:mm aaa").format(dateTime)+"\n"
     }
 
-    private fun openPhotoDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setMessage("Unggah Foto dari")
-        builder.setPositiveButton("kamera") { p0,p1 ->
-            openCameraForImage()
-        }
-        builder.setNegativeButton("file") { p0,p1 ->
-            openGalleryForImage()
-        }
-        builder.show()
-    }
-
-    private fun openGalleryForImage() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, REQUEST_GALLERY)
-    }
-
-    private fun openCameraForImage() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
-            intent.resolveActivity(packageManager).also {
-                startActivityForResult(intent, REQUEST_CAMERA)
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK) {
-            if (requestCode == AkunTutorActivity.REQUEST_GALLERY) {
-                binding.ivBukti.setImageURI(data?.data)
-                imageBitmap = (binding.ivBukti.drawable as BitmapDrawable).bitmap
-            } else if (requestCode == AkunTutorActivity.REQUEST_CAMERA) {
-                imageBitmap = data?.extras?.get("data") as Bitmap
-                binding.ivBukti.setImageBitmap(imageBitmap)
-            }
-
-            binding.btnTambahLes.setEnabled(true)
-        }
-    }
-
     private fun getGenderChecked(): String {
         if (binding.laki.isChecked) return "laki-laki"
         else if (binding.perempuan.isChecked) return "perempuan"
@@ -265,37 +226,39 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
 
         if (idLes == "0") status = false
         if (listJadwal.size == 0) status = false
-        if (binding.textBiaya.text == "") status = false
 
         return status
     }
 
     private fun addLes() {
-        keyLes = DataLesController().getNewKey()
         val dataLes = DataLes(
             gajiTutor,
             idLes,
             intent.getStringExtra(EXTRA_IDSISWA).toString(),
-            getGenderChecked()
-        )
-        DataLesController().changeDataLes(dataLes, keyLes, listJadwal)
-    }
-
-    private fun uploadImage(imageBitmap: Bitmap, keyLes: String) {
-        keyPembayaran = PembayaranController().getNewKey()
-        val pembayaran = Pembayaran(
-            keyLes,
-            "",
-            "",
-            Autentikasi.auth.currentUser?.uid!!,
-            intent.getStringExtra(EXTRA_IDSISWA).toString(),
-            binding.textBiaya.text.toString().substringAfter(": ").toInt(),
-            PembayaranController().getCurrentDateTime(),
+            getGenderChecked(),
+            "${idKabupaten}_${getGenderChecked()}",
+            binding.tvBiayaLes.text.toString().toInt(),
             false
         )
-        PembayaranController().uploadImage(imageBitmap, keyLes, keyPembayaran, pembayaran)
-        Database.database.getReference("jumlah_data/les_siswa").setValue(ServerValue.increment(1))
-        Database.database.getReference("jumlah_data/pembayaran").setValue(ServerValue.increment(1))
+        val key = Database.database.getReference("les_siswa").push().key!!
+        Database.database.getReference("les_siswa/${key}").setValue(dataLes)
+            .addOnSuccessListener {
+                val updates: MutableMap<String, Any> = HashMap()
+                for (i in 0 until listJadwal.size) {
+                    updates["les_siswa/${key}/waktu_mulai/${i}"] = listJadwal[i]
+                }
+                Database.database.reference.updateChildren(updates)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "berhasil ambil les", Toast.LENGTH_SHORT).show()
+                        goToLes()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "gagal tambah jadwal les", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "gagal ambil les", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun goToLes() {

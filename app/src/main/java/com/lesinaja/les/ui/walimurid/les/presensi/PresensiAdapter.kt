@@ -70,6 +70,7 @@ data class PresensiAdapter(val mCtx : Context, val layoutResId : Int, val presen
     private fun goToLaporan(presensi: Presensi, tanggal: String, jam: String, namaTutor: String) {
         Intent(mCtx, LaporanActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(UbahJadwalActivity.EXTRA_IDLESSISWA, presensi.id_lessiswa)
             it.putExtra(LaporanActivity.EXTRA_IDLESSISWATUTOR, presensi.id_lessiswatutor)
             it.putExtra(LaporanActivity.EXTRA_IDPRESENSI, presensi.id_presensi)
             it.putExtra(LaporanActivity.EXTRA_NAMASISWA, presensi.nama_siswa)
@@ -85,6 +86,7 @@ data class PresensiAdapter(val mCtx : Context, val layoutResId : Int, val presen
     private fun goToUbahJadwal(presensi: Presensi, tanggal: String, jam: String, namaTutor: String) {
         Intent(mCtx, UbahJadwalActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(UbahJadwalActivity.EXTRA_IDLESSISWA, presensi.id_lessiswa)
             it.putExtra(UbahJadwalActivity.EXTRA_IDLESSISWATUTOR, presensi.id_lessiswatutor)
             it.putExtra(UbahJadwalActivity.EXTRA_IDPRESENSI, presensi.id_presensi)
             it.putExtra(UbahJadwalActivity.EXTRA_NAMASISWA, presensi.nama_siswa)

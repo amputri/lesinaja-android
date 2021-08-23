@@ -6,13 +6,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.format.DateFormat
+import android.widget.Button
 import android.widget.DatePicker
 import android.widget.TimePicker
 import android.widget.Toast
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityUbahJadwalTutorBinding
-import com.lesinaja.les.ui.header.ToolbarFragment
-import com.lesinaja.les.ui.tutor.les.LesTutorActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,6 +32,7 @@ class UbahJadwalTutorActivity: AppCompatActivity(), DatePickerDialog.OnDateSetLi
     var dateTime:Long = 0
 
     companion object {
+        const val EXTRA_IDLESSISWA = "id_les_siswa"
         const val EXTRA_IDLESSISWATUTOR = "id_les_siswa_tutor"
         const val EXTRA_IDPRESENSI = "id_presensi"
         const val EXTRA_NAMASISWA = "nama_siswa"
@@ -48,7 +48,9 @@ class UbahJadwalTutorActivity: AppCompatActivity(), DatePickerDialog.OnDateSetLi
         binding = ActivityUbahJadwalTutorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setToolbar("Ubah Jadwal Les")
+        binding.btnKembali.setOnClickListener {
+            goToPresensi()
+        }
 
         updateUI()
 
@@ -59,15 +61,6 @@ class UbahJadwalTutorActivity: AppCompatActivity(), DatePickerDialog.OnDateSetLi
         binding.btnKirimUbahJadwal.setOnClickListener {
             updateJadwal()
         }
-    }
-
-    private fun setToolbar(judul: String) {
-        val toolbarFragment = ToolbarFragment()
-        val bundle = Bundle()
-
-        bundle.putString("judul", judul)
-        toolbarFragment.arguments = bundle
-        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -114,15 +107,19 @@ class UbahJadwalTutorActivity: AppCompatActivity(), DatePickerDialog.OnDateSetLi
         if (dateTime > 0) {
             Database.database.getReference("les_presensi/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/waktu").setValue(dateTime)
             Toast.makeText(this, "berhasil ubah jadwal", Toast.LENGTH_SHORT).show()
-            goToLes()
+            goToPresensi()
         } else {
             Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun goToLes() {
-        Intent(this, LesTutorActivity::class.java).also {
+    private fun goToPresensi() {
+        Intent(this, PresensiTutorActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(PresensiTutorActivity.EXTRA_IDLESSISWA, intent.getStringExtra(EXTRA_IDLESSISWA))
+            it.putExtra(PresensiTutorActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA))
+            it.putExtra(PresensiTutorActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES))
+            it.putExtra(PresensiTutorActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN))
             startActivity(it)
         }
     }

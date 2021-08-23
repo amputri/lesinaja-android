@@ -7,13 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityDetailTutorPelamarBinding
-import com.lesinaja.les.ui.header.ToolbarFragment
+import com.lesinaja.les.ui.walimurid.les.BayarLesActivity
 import com.lesinaja.les.ui.walimurid.les.LesActivity
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
@@ -40,8 +40,15 @@ class DetailTutorPelamarActivity : AppCompatActivity() {
         binding = ActivityDetailTutorPelamarBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnKembali.setOnClickListener {
+            if (binding.btnPilihTutor.visibility == VISIBLE) {
+                goToTutorPelamar()
+            } else {
+                goToLes()
+            }
+        }
+
         updateUI()
-        controlButton()
 
         binding.tvLinkMicroteaching.setOnClickListener {
             openLink()
@@ -50,15 +57,6 @@ class DetailTutorPelamarActivity : AppCompatActivity() {
         binding.btnPilihTutor.setOnClickListener {
             pilihTutor()
         }
-    }
-
-    private fun setToolbar(judul: String) {
-        val toolbarFragment = ToolbarFragment()
-        val bundle = Bundle()
-
-        bundle.putString("judul", judul)
-        toolbarFragment.arguments = bundle
-        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -119,12 +117,36 @@ class DetailTutorPelamarActivity : AppCompatActivity() {
                                                                 if (dataSnapshotProvinsi.exists()) {
                                                                     binding.tvTelepon.text = dataSnapshotUser.child("kontak").child("telepon").value.toString()
                                                                     binding.tvNamaTutor.text = dataSnapshotUser.child("nama").value.toString()
+                                                                    binding.tvAlamat.text = "${dataSnapshotUser.child("kontak").child("alamat_rumah").value}, ${dataSnapshotDesa.value}, ${dataSnapshotKecamatan.value}, ${dataSnapshotKabupaten.value}, ${dataSnapshotProvinsi.value}"
 
-                                                                    if (dataSnapshotUser.key == intent.getStringExtra(EXTRA_IDPELAMAR)) {
-                                                                        binding.tvAlamat.text = "${dataSnapshotUser.child("kontak").child("alamat_rumah").value}, ${dataSnapshotDesa.value}, ${dataSnapshotKecamatan.value}, ${dataSnapshotKabupaten.value}, ${dataSnapshotProvinsi.value}"
-                                                                    } else {
-                                                                        binding.tvAlamat.text = "${dataSnapshotDesa.value}, ${dataSnapshotKecamatan.value}, ${dataSnapshotKabupaten.value}, ${dataSnapshotProvinsi.value}"
-                                                                    }
+                                                                    val tutor = Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/id_tutor")
+                                                                    tutor.addValueEventListener(object : ValueEventListener {
+                                                                        override fun onDataChange(dataSnapshotTutor: DataSnapshot) {
+                                                                            if (dataSnapshotTutor.exists()) {
+                                                                                if (dataSnapshotTutor.value == intent.getStringExtra(EXTRA_IDPELAMAR)) {
+                                                                                    binding.btnPilihTutor.visibility = INVISIBLE
+                                                                                    binding.tvJudul.text = "Detail Tutor"
+                                                                                }
+                                                                            } else {
+                                                                                binding.btnPilihTutor.visibility = VISIBLE
+                                                                                binding.tvJudul.text = "Detail Tutor Pelamar"
+                                                                            }
+
+                                                                            val statusBayar = Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/status_bayar")
+                                                                            statusBayar.addValueEventListener(object : ValueEventListener {
+                                                                                override fun onDataChange(dataSnapshotBayar: DataSnapshot) {
+                                                                                    if (dataSnapshotBayar.exists()) {
+                                                                                        if (dataSnapshotBayar.value.toString() != "true") {
+                                                                                            binding.tvTelepon.text = "xxxxxxxx"
+                                                                                            binding.tvAlamat.text = "${dataSnapshotDesa.value}, ${dataSnapshotKecamatan.value}, ${dataSnapshotKabupaten.value}, ${dataSnapshotProvinsi.value}"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                override fun onCancelled(databaseError: DatabaseError) {}
+                                                                            })
+                                                                        }
+                                                                        override fun onCancelled(databaseError: DatabaseError) {}
+                                                                    })
                                                                 }
                                                             }
                                                             override fun onCancelled(error: DatabaseError) {}
@@ -190,64 +212,36 @@ class DetailTutorPelamarActivity : AppCompatActivity() {
         })
     }
 
-    private fun controlButton() {
-        val tutor = Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/id_tutor")
-        tutor.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshotTutor: DataSnapshot) {
-                if (dataSnapshotTutor.exists()) {
-                    if (dataSnapshotTutor.value == intent.getStringExtra(EXTRA_IDPELAMAR)) {
-                        binding.btnPilihTutor.visibility = INVISIBLE
-                        setToolbar("Detail Tutor")
-                    } else {
-                        binding.btnPilihTutor.visibility = VISIBLE
-                        binding.tvTelepon.text = "xxxxxxxx"
-                        setToolbar("Detail Tutor Pelamar")
-                    }
-                }
-            }
-            override fun onCancelled(databaseError: DatabaseError) {}
-        })
+    private fun goToBayarLes() {
+        Intent(this, BayarLesActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(BayarLesActivity.EXTRA_IDLESSISWA, intent.getStringExtra(EXTRA_IDLESSISWA))
+            it.putExtra(BayarLesActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA))
+            it.putExtra(BayarLesActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES))
+            it.putExtra(BayarLesActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN))
+            startActivity(it)
+        }
     }
 
-    private fun addPresensi() {
-        while (tanggalBaru.size < intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN).toString().toInt()) {
-            for (i in 0..tanggalLama.size-1) {
-                if (tanggalBaru.size < intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN).toString().toInt()) {
-                    var c = Calendar.getInstance()
-                    c.setTime(SimpleDateFormat("yyyy-MM-dd").parse(tanggalLama[i]))
-                    c.add(Calendar.DAY_OF_MONTH, 7)
-
-                    var temp = SimpleDateFormat("yyyy-MM-dd").format(c.getTime())
-
-                    tanggalBaru = tanggalBaru.plus(SimpleDateFormat("yyyy-MM-dd HH:mm").parse("${temp} ${waktu[i]}").time)
-                    tanggalLama[i] = "${temp}"
-                }
+    private fun addTutor() {
+        val updates: MutableMap<String, Any> = HashMap()
+        updates["les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/id_tutor"] = intent.getStringExtra(EXTRA_IDPELAMAR).toString()
+        updates["les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/wilayah_preferensi"] = "les"
+        Database.database.reference.updateChildren(updates)
+            .addOnSuccessListener {
+                Toast.makeText(this, "berhasil pilih tutor", Toast.LENGTH_SHORT).show()
+                goToBayarLes()
             }
-        }
-
-        var keyLes = Database.database.getReference("les_siswatutor").push().key
-        Database.database.getReference("les_siswatutor/${keyLes}/id_lessiswa").setValue(intent.getStringExtra(EXTRA_IDLESSISWA))
-        Database.database.getReference("les_siswatutor/${keyLes}/id_tutor").setValue(intent.getStringExtra(EXTRA_IDPELAMAR))
-        for (i in 0 until tanggalBaru.size) {
-            var keyPresensi = Database.database.getReference("les_presensi/${keyLes}").push().key
-            Database.database.getReference("les_presensi/${keyLes}/${keyPresensi}/waktu").setValue(tanggalBaru[i])
-        }
+            .addOnFailureListener {
+                Toast.makeText(this, "gagal pilih tutor", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun pilihTutor() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage("yakin ingin memilih tutor ${binding.tvNamaTutor.text}?")
         builder.setPositiveButton("Pilih") { p0,p1 ->
-            Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/id_tutor").setValue(intent.getStringExtra(EXTRA_IDPELAMAR))
-            val ref = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/kontak/id_desa")
-            ref.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    addPresensi()
-                    Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/wilayah_status").setValue("${dataSnapshot.value.toString().substring(0,4)}_les")
-                    goToLes()
-                }
-                override fun onCancelled(databaseError: DatabaseError) {}
-            })
+            addTutor()
         }
         builder.setNegativeButton("Batal") { p0,p1 -> }
         builder.show()
@@ -256,6 +250,18 @@ class DetailTutorPelamarActivity : AppCompatActivity() {
     private fun goToLes() {
         Intent(this, LesActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(it)
+        }
+    }
+
+    private fun goToTutorPelamar() {
+        Intent(this, TutorPelamarActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(TutorPelamarActivity.EXTRA_IDLESSISWA, intent.getStringExtra(EXTRA_IDLESSISWA))
+            it.putExtra(TutorPelamarActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA))
+            it.putExtra(TutorPelamarActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES))
+            it.putExtra(TutorPelamarActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN))
+            it.putExtra(TutorPelamarActivity.EXTRA_TANGGALMULAI, intent.getStringExtra(EXTRA_TANGGALMULAI))
             startActivity(it)
         }
     }

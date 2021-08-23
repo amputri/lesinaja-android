@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.walimurid.les.BayarLesActivity">
+
+    <RelativeLayout
+        android:id="@+id/containerHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/orange"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:columnCount="2">
+
+            <ImageButton
+                android:id="@+id/btnKembali"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/orange"
+                android:padding="16dp"
+                app:srcCompat="@drawable/ic_kembali"
+                tools:ignore="VectorDrawableCompat"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/tvJudul"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Bayar Les"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                app:layout_gravity="center|left" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/gray"
+                app:layout_columnSpan="2" />
+
+        </androidx.gridlayout.widget.GridLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@id/containerFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/footer"
+            android:name="com.lesinaja.les.ui.walimurid.FooterWaliMuridFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_footer_wali_murid" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/containerFooter"
+        android:layout_below="@+id/containerHeader"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:fillViewport="true"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/textSiswa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="5dp"
+                app:contentPadding="8dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textView10"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Les"
+                        app:layout_constraintEnd_toStartOf="@+id/tvLes"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvLes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/textView7"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Jadwal / Tanggal Mulai Les"
+                        app:layout_constraintEnd_toStartOf="@+id/tvJadwalLes"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvLes" />
+
+                    <TextView
+                        android:id="@+id/tvJadwalLes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/les1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+                    <TextView
+                        android:id="@+id/les1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Preferensi Tutor"
+                        app:layout_constraintEnd_toStartOf="@+id/tvPreferensiTutor"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvJadwalLes" />
+
+                    <TextView
+                        android:id="@+id/tvPreferensiTutor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/textViewLes"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/les1" />
+
+                    <TextView
+                        android:id="@+id/textViewLes"
+                        android:layout_width="135dp"
+                        android:layout_height="18dp"
+                        android:layout_marginTop="10dp"
+                        android:text="Biaya Pendaftaran"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvPreferensiTutor" />
+
+                    <TextView
+                        android:id="@+id/tvBiayaDaftar"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="right"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/textViewLes"
+                        app:layout_constraintTop_toBottomOf="@+id/tvPreferensiTutor" />
+
+                    <TextView
+                        android:id="@+id/textViewBiayaLes"
+                        android:layout_width="135dp"
+                        android:layout_height="18dp"
+                        android:layout_marginTop="5dp"
+                        android:text="Biaya Les"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textViewLes" />
+
+                    <TextView
+                        android:id="@+id/tvBiayaLes"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="right"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textViewBiayaLes"
+                        app:layout_constraintTop_toBottomOf="@+id/tvBiayaDaftar" />
+
+                    <TextView
+                        android:id="@+id/textViewJadwal"
+                        android:layout_width="135dp"
+                        android:layout_height="17dp"
+                        android:layout_marginTop="4dp"
+                        android:text="Total"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textViewBiayaLes" />
+
+                    <TextView
+                        android:id="@+id/tvTotal"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_marginTop="4dp"
+                        android:gravity="right"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/textViewJadwal"
+                        app:layout_constraintTop_toBottomOf="@+id/tvBiayaLes" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/textUnggah"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Unggah Bukti Pembayaran berikut" />
+
+            <ImageView
+                android:id="@+id/ivBukti"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:srcCompat="@drawable/ic_file"
+                tools:ignore="VectorDrawableCompat" />
+
+            <Button
+                android:id="@+id/btnTambahLes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/green"
+                android:text="Kirim"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnHapus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/white"
+                android:text="Batalkan"
+                android:textAllCaps="false"
+                android:textColor="@color/pink" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

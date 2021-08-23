@@ -47,13 +47,11 @@ class SiswaActivity : AppCompatActivity() {
                         val siswa = SiswaKey(
                             h.key!!,
                             h.child("id_jenjangkelas").value.toString(),
-                            h.child("id_walimurid").value.toString(),
                             h.child("nama").value.toString(),
-                            h.child("sekolah").value.toString()
+                            h.child("sekolah").value.toString(),
+                            h.child("status_bayar").value.toString().toBoolean()
                         )
-                        if (siswa != null) {
-                            siswaList.add(siswa)
-                        }
+                        siswaList.add(siswa)
                     }
 
                     val adapter = SiswaAdapter(this@SiswaActivity, R.layout.item_siswa, siswaList)

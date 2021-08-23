@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -11,7 +12,6 @@ import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityDetailLowonganBinding
-import com.lesinaja.les.ui.header.ToolbarFragment
 import java.text.SimpleDateFormat
 
 class DetailLowonganActivity : AppCompatActivity() {
@@ -35,7 +35,9 @@ class DetailLowonganActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        setToolbar("Detail Lowongan")
+        binding.btnKembali.setOnClickListener {
+            goToLowongan()
+        }
 
         listJadwal = arrayOf()
         binding.tvJadwal.text = ""
@@ -46,15 +48,6 @@ class DetailLowonganActivity : AppCompatActivity() {
         binding.btnAmbilLowongan.setOnClickListener {
             ambilLowongan()
         }
-    }
-
-    private fun setToolbar(judul: String) {
-        val toolbarFragment = ToolbarFragment()
-        val bundle = Bundle()
-
-        bundle.putString("judul", judul)
-        toolbarFragment.arguments = bundle
-        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {

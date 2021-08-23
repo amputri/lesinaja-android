@@ -1,5 +1,6 @@
 package com.lesinaja.les.ui.walimurid.les.pelamar
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.firebase.database.DataSnapshot
@@ -9,7 +10,7 @@ import com.lesinaja.les.R
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.HeaderLes
 import com.lesinaja.les.databinding.ActivityTutorPelamarBinding
-import com.lesinaja.les.ui.header.ToolbarFragment
+import com.lesinaja.les.ui.walimurid.les.LesActivity
 
 class TutorPelamarActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTutorPelamarBinding
@@ -29,20 +30,13 @@ class TutorPelamarActivity : AppCompatActivity() {
         setContentView(binding.root)
         idPelamarList = mutableListOf()
 
-        setToolbar("Daftar Tutor Pelamar")
+        binding.btnKembali.setOnClickListener {
+            goToLes()
+        }
 
         updateUI()
 
         setListView()
-    }
-
-    private fun setToolbar(judul: String) {
-        val toolbarFragment = ToolbarFragment()
-        val bundle = Bundle()
-
-        bundle.putString("judul", judul)
-        toolbarFragment.arguments = bundle
-        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -76,5 +70,12 @@ class TutorPelamarActivity : AppCompatActivity() {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun goToLes() {
+        Intent(this, LesActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(it)
+        }
     }
 }

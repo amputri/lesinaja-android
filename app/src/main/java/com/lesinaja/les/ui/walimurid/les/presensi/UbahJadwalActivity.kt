@@ -11,8 +11,6 @@ import android.widget.TimePicker
 import android.widget.Toast
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityUbahJadwalBinding
-import com.lesinaja.les.ui.header.ToolbarFragment
-import com.lesinaja.les.ui.walimurid.les.LesActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,6 +31,7 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
     var dateTime: Long = 0
 
     companion object {
+        const val EXTRA_IDLESSISWA = "id_les_siswa"
         const val EXTRA_IDLESSISWATUTOR = "id_les_siswa_tutor"
         const val EXTRA_IDPRESENSI = "id_presensi"
         const val EXTRA_NAMASISWA = "nama_siswa"
@@ -48,7 +47,9 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         binding = ActivityUbahJadwalBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setToolbar("Ubah Jadwal Les")
+        binding.btnKembali.setOnClickListener {
+            goToPresensi()
+        }
 
         updateUI()
 
@@ -59,15 +60,6 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         binding.btnKirimUbahJadwal.setOnClickListener {
             updateJadwal()
         }
-    }
-
-    private fun setToolbar(judul: String) {
-        val toolbarFragment = ToolbarFragment()
-        val bundle = Bundle()
-
-        bundle.putString("judul", judul)
-        toolbarFragment.arguments = bundle
-        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -115,15 +107,19 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         if (dateTime > 0) {
             Database.database.getReference("les_presensi/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/waktu").setValue(dateTime)
             Toast.makeText(this, "berhasil ubah jadwal", Toast.LENGTH_SHORT).show()
-            goToLes()
+            goToPresensi()
         } else {
             Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun goToLes() {
-        Intent(this, LesActivity::class.java).also {
+    private fun goToPresensi() {
+        Intent(this, PresensiActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(PresensiActivity.EXTRA_IDLESSISWA, intent.getStringExtra(EXTRA_IDLESSISWA))
+            it.putExtra(PresensiActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA))
+            it.putExtra(PresensiActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES))
+            it.putExtra(PresensiActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN))
             startActivity(it)
         }
     }

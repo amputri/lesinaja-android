@@ -66,27 +66,18 @@ data class SiswaAdapter(val mCtx : Context, val layoutResId : Int, val siswaList
         val builder = AlertDialog.Builder(mCtx)
         builder.setMessage("yakin ingin menghapus ${siswa.nama}?")
         builder.setPositiveButton("Hapus") { p0,p1 ->
-            val biaya = Database.database.getReference("pembayaran").orderByChild("bayar_pendaftaran").equalTo(siswa.id_siswa)
-            biaya.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        for (h in dataSnapshot.children) {
-                            if (h.child("sudah_dikonfirmasi").value == false) {
-                                Database.database.getReference("pembayaran/${h.key}").removeValue()
-                                Database.database.getReference("siswa/${siswa.id_siswa}").removeValue()
-                                FirebaseStorage.getInstance().reference.child("bukti_daftar/${siswa.id_siswa}").delete()
-                                Database.database.getReference("jumlah_data/siswa").setValue(ServerValue.increment(-1))
-                                Database.database.getReference("jumlah_data/pembayaran").setValue(ServerValue.increment(-1))
-
-                                Toast.makeText(mCtx, "data berhasil dihapus", Toast.LENGTH_SHORT).show()
-                            } else {
-                                Toast.makeText(mCtx, "tidak dapat menghapus siswa terverifikasi", Toast.LENGTH_SHORT).show()
-                            }
-                        }
+            if (!siswa.status_bayar) {
+                Database.database.getReference("siswa/${siswa.id_siswa}").removeValue()
+                    .addOnSuccessListener {
+                        Database.database.getReference("jumlah_data/siswa").setValue(ServerValue.increment(-1))
+                        Toast.makeText(mCtx, "berhasil hapus siswa", Toast.LENGTH_SHORT).show()
                     }
-                }
-                override fun onCancelled(databaseError: DatabaseError) {}
-            })
+                    .addOnFailureListener {
+                        Toast.makeText(mCtx, "gagal hapus siswa", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Toast.makeText(mCtx, "tidak dapat menghapus siswa terverifikasi", Toast.LENGTH_SHORT).show()
+            }
         }
         builder.setNegativeButton("Batal") { p0,p1 -> }
         builder.show()

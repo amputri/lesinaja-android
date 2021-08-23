@@ -91,6 +91,7 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
         }
 
         view.findViewById<ImageView>(R.id.btnUbah).visibility = GONE
+        view.findViewById<TextView>(R.id.tvpembayaranjudul).visibility = GONE
 
         view.findViewById<ImageView>(R.id.btnPresensi).setOnClickListener {
             val ref = Database.database.getReference("siswa/${les.id_siswa}/nama")

@@ -41,8 +41,8 @@ class SiswaActivity : AppCompatActivity() {
         val ref = Database.database.getReference("siswa").orderByChild("id_walimurid").equalTo(Autentikasi.auth.currentUser?.uid)
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                siswaList.clear()
                 if (snapshot.exists()) {
-                    siswaList.clear()
                     for (h in snapshot.children) {
                         val siswa = SiswaKey(
                             h.key!!,

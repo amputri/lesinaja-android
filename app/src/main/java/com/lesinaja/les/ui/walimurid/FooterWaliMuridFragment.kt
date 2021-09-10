@@ -27,7 +27,7 @@ class FooterWaliMuridFragment : Fragment() {
 
     private val halamanSiswa = arrayOf("SiswaActivity", "TambahSiswaActivity", "UbahSiswaActivity")
     private val halamanLes = arrayOf(
-        "LesActivity", "TambahLesActivity", "BayarLesActivity",
+        "LesActivity", "TambahLesActivity", "BayarLesActivity","PerpanjangLesActivity",
         "TutorPelamarActivity", "DetailTutorPelamarActivity",
         "PresensiActivity", "LaporanActivity", "UbahJadwalActivity"
     )

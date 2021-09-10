@@ -9,6 +9,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityLaporanTutorBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
+import java.util.HashMap
 
 class LaporanTutorActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLaporanTutorBinding
@@ -33,12 +35,22 @@ class LaporanTutorActivity : AppCompatActivity() {
         binding.btnKembali.setOnClickListener {
             goToPresensi()
         }
+        setToolbar("Laporan Les")
 
         updateUI()
 
         binding.btnKirimLaporan.setOnClickListener {
             updateLaporan()
         }
+    }
+
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -72,10 +84,17 @@ class LaporanTutorActivity : AppCompatActivity() {
 
     private fun updateLaporan() {
         if (binding.tvMateri.text.toString().trim() != "" && binding.tvLaporanTutor.text.toString().trim() != "") {
-            Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/materi").setValue(binding.tvMateri.text.toString().trim())
-            Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/laporan_tutor").setValue(binding.tvLaporanTutor.text.toString().trim())
-            Toast.makeText(this, "berhasil input laporan", Toast.LENGTH_SHORT).show()
-            goToPresensi()
+            val updates: MutableMap<String, Any> = HashMap()
+            updates["les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/materi"] = binding.tvMateri.text.toString().trim()
+            updates["les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/laporan_tutor"] = binding.tvLaporanTutor.text.toString().trim()
+            Database.database.reference.updateChildren(updates)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "berhasil input laporan", Toast.LENGTH_SHORT).show()
+                    goToPresensi()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "gagal input laporan", Toast.LENGTH_SHORT).show()
+                }
         } else {
             Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
         }
@@ -85,9 +104,9 @@ class LaporanTutorActivity : AppCompatActivity() {
         Intent(this, PresensiTutorActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
             it.putExtra(PresensiTutorActivity.EXTRA_IDLESSISWA, intent.getStringExtra(EXTRA_IDLESSISWA))
-            it.putExtra(PresensiTutorActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA))
-            it.putExtra(PresensiTutorActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES))
-            it.putExtra(PresensiTutorActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN))
+            it.putExtra(PresensiTutorActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA).toString().substringAfter("Siswa: "))
+            it.putExtra(PresensiTutorActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES).toString().substringAfter("Les: "))
+            it.putExtra(PresensiTutorActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN).toString().substringAfter("Jumlah Pertemuan: "))
             startActivity(it)
         }
     }

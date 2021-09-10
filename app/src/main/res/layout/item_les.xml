@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_height="match_parent"
+        android:layout_marginVertical="8dp"
+        android:layout_marginHorizontal="16dp"
         app:cardCornerRadius="5dp"
         app:cardElevation="5dp"
         app:contentPadding="8dp">
@@ -26,7 +26,7 @@
                 android:layout_marginRight="16dp"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf= "@+id/tvpembayaranjudul"
+                app:layout_constraintEnd_toStartOf="@+id/tvpembayaranjudul"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
-                app:layout_constraintEnd_toStartOf= "@+id/tvpembayaranjudul"
+                app:layout_constraintEnd_toStartOf="@+id/tvpembayaranjudul"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvNamaLes" />
 
@@ -47,47 +47,31 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
-                app:layout_constraintEnd_toStartOf= "@+id/tvpembayaranjudul"
+                app:layout_constraintEnd_toStartOf="@+id/tvpembayaranjudul"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvJumlahPertemuan" />
-
-            <TextView
-                android:id="@+id/tvTutor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:text="Lihat Tutor Pelamar"
-                android:textColor="@color/green"
-                app:layout_constraintEnd_toStartOf= "@+id/tvpembayaranjudul"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTanggalMulai" />
 
             <ImageView
                 android:id="@+id/btnUbah"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@drawable/ic_bayar"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/tvTanggalMulai"
                 app:layout_constraintEnd_toEndOf="@+id/tvpembayaranjudul"
                 app:layout_constraintStart_toStartOf="@+id/tvpembayaranjudul"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.333"
+                app:layout_constraintTop_toTopOf="@+id/tvNamaLes"
                 app:tint="@color/orange" />
 
             <TextView
                 android:id="@+id/tvpembayaranjudul"
                 android:layout_width="wrap_content"
-                android:layout_height="14dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:text="Pembayaran"
                 android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/textView2"
-                app:layout_constraintTop_toTopOf="@+id/btnUbah" />
+                app:layout_constraintTop_toBottomOf="@+id/btnUbah" />
 
             <ImageView
                 android:id="@+id/btnPresensi"
@@ -95,25 +79,35 @@
                 android:layout_height="30dp"
                 android:layout_margin="16dp"
                 android:src="@drawable/ic_presensi"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/tvTanggalMulai"
                 app:layout_constraintEnd_toEndOf="@+id/textView2"
                 app:layout_constraintStart_toStartOf="@+id/textView2"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
                 app:tint="@color/green" />
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:text="Presensi"
                 android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/btnPresensi" />
+                app:layout_constraintTop_toBottomOf="@+id/btnPresensi" />
+
+            <Button
+                android:id="@+id/tvTutor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/orange"
+                android:text="Lihat Tutor Pelamar"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTanggalMulai" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

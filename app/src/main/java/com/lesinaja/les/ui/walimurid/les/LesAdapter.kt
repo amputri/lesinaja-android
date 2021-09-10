@@ -5,10 +5,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -47,15 +44,26 @@ data class LesAdapter(val mCtx : Context, val layoutResId : Int, val lesList : L
                                 jenjang.addValueEventListener(object : ValueEventListener {
                                     override fun onDataChange(dataSnapshotJenjang: DataSnapshot) {
                                         if (dataSnapshotJenjang.exists()) {
-                                            val paket = Database.database.getReference("master_paket/${dataSnapshotLes.child("paket").value}/jumlah_pertemuan")
-                                            paket.addValueEventListener(object : ValueEventListener {
-                                                override fun onDataChange(dataSnapshotPaket: DataSnapshot) {
-                                                    if (dataSnapshotPaket.exists()) {
-                                                        view.findViewById<TextView>(R.id.tvJumlahPertemuan).text = "${dataSnapshotPaket.value} pertemuan"
+                                            val gantiTutor = Database.database.getReference("les_gantitutor/${les.id_lessiswa}/jumlah_pertemuan")
+                                            gantiTutor.addListenerForSingleValueEvent(object : ValueEventListener {
+                                                override fun onDataChange(snapshotGantiTutor: DataSnapshot) {
+                                                    if (snapshotGantiTutor.exists()) {
+                                                        view.findViewById<TextView>(R.id.tvJumlahPertemuan).text = "${snapshotGantiTutor.value} pertemuan"
                                                         view.findViewById<TextView>(R.id.tvNamaLes).text = "${dataSnapshotMapel.value} ${dataSnapshotJenjang.value}"
+                                                    } else {
+                                                        val paket = Database.database.getReference("master_paket/${dataSnapshotLes.child("paket").value}/jumlah_pertemuan")
+                                                        paket.addValueEventListener(object : ValueEventListener {
+                                                            override fun onDataChange(dataSnapshotPaket: DataSnapshot) {
+                                                                if (dataSnapshotPaket.exists()) {
+                                                                    view.findViewById<TextView>(R.id.tvJumlahPertemuan).text = "${dataSnapshotPaket.value} pertemuan"
+                                                                    view.findViewById<TextView>(R.id.tvNamaLes).text = "${dataSnapshotMapel.value} ${dataSnapshotJenjang.value}"
+                                                                }
+                                                            }
+                                                            override fun onCancelled(databaseError: DatabaseError) {}
+                                                        })
                                                     }
                                                 }
-                                                override fun onCancelled(databaseError: DatabaseError) {}
+                                                override fun onCancelled(error: DatabaseError) {}
                                             })
                                         }
                                     }
@@ -78,7 +86,7 @@ data class LesAdapter(val mCtx : Context, val layoutResId : Int, val lesList : L
                     nama.addValueEventListener(object : ValueEventListener {
                         override fun onDataChange(dataSnapshotNama: DataSnapshot) {
                             if (dataSnapshotNama.exists()) {
-                                view.findViewById<TextView>(R.id.tvTutor).text = "Tutor: ${dataSnapshotNama.value}"
+                                view.findViewById<Button>(R.id.tvTutor).text = "Tutor: ${dataSnapshotNama.value}"
                             }
                         }
                         override fun onCancelled(databaseError: DatabaseError) {}
@@ -99,7 +107,8 @@ data class LesAdapter(val mCtx : Context, val layoutResId : Int, val lesList : L
                             les.id_lessiswa,
                             view.findViewById<TextView>(R.id.tvNamaLes).text.toString(),
                             view.findViewById<TextView>(R.id.tvJumlahPertemuan).text.toString().substringBefore(" pertemuan"),
-                            dataSnapshotSiswa.value.toString()
+                            dataSnapshotSiswa.value.toString(),
+                            view.findViewById<Button>(R.id.tvTutor).text.toString()
                         )
                     }
                 }
@@ -107,7 +116,7 @@ data class LesAdapter(val mCtx : Context, val layoutResId : Int, val lesList : L
             })
         }
 
-        view.findViewById<TextView>(R.id.tvTutor).setOnClickListener {
+        view.findViewById<Button>(R.id.tvTutor).setOnClickListener {
             val ref = Database.database.getReference("siswa/${les.id_siswa}/nama")
             ref.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshotSiswa: DataSnapshot) {
@@ -148,15 +157,15 @@ data class LesAdapter(val mCtx : Context, val layoutResId : Int, val lesList : L
                 override fun onDataChange(dataSnapshotSiswa: DataSnapshot) {
                     if (dataSnapshotSiswa.exists()) {
                         val statusBayar = Database.database.getReference("les_siswa/${les.id_lessiswa}/status_bayar")
-                        statusBayar.addValueEventListener(object : ValueEventListener {
+                        statusBayar.addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(dataSnapshotStatusBayar: DataSnapshot) {
                                 if (dataSnapshotStatusBayar.value == true) {
                                     val idTutor = Database.database.getReference("les_siswa/${les.id_lessiswa}/id_tutor")
-                                    idTutor.addValueEventListener(object : ValueEventListener {
+                                    idTutor.addListenerForSingleValueEvent(object : ValueEventListener {
                                         override fun onDataChange(dataSnapshotIdTutor: DataSnapshot) {
                                             if (dataSnapshotIdTutor.exists()) {
-                                                val cekPresensi = Database.database.getReference("les_siswatutor").orderByChild("id_lessiswa").equalTo(les.id_lessiswa)
-                                                cekPresensi.addValueEventListener(object : ValueEventListener {
+                                                val cekPresensi = Database.database.getReference("les_siswatutor").orderByChild("idlessiswa_idtutor").equalTo("${les.id_lessiswa}_${dataSnapshotIdTutor.value}")
+                                                cekPresensi.addListenerForSingleValueEvent(object : ValueEventListener {
                                                     override fun onDataChange(dataSnapshotCekPresensi: DataSnapshot) {
                                                         if (dataSnapshotCekPresensi.exists() == false) {
                                                             addPresensi(
@@ -164,20 +173,13 @@ data class LesAdapter(val mCtx : Context, val layoutResId : Int, val lesList : L
                                                                 dataSnapshotIdTutor.value.toString(),
                                                                 view.findViewById<TextView>(R.id.tvJumlahPertemuan).text.toString().substringBefore(" pertemuan")
                                                             )
-                                                            goToPresensi(
-                                                                les.id_lessiswa,
-                                                                view.findViewById<TextView>(R.id.tvNamaLes).text.toString(),
-                                                                view.findViewById<TextView>(R.id.tvJumlahPertemuan).text.toString().substringBefore(" pertemuan"),
-                                                                dataSnapshotSiswa.value.toString()
-                                                            )
-                                                        } else {
-                                                            goToPresensi(
-                                                                les.id_lessiswa,
-                                                                view.findViewById<TextView>(R.id.tvNamaLes).text.toString(),
-                                                                view.findViewById<TextView>(R.id.tvJumlahPertemuan).text.toString().substringBefore(" pertemuan"),
-                                                                dataSnapshotSiswa.value.toString()
-                                                            )
                                                         }
+                                                        goToPresensi(
+                                                            les.id_lessiswa,
+                                                            view.findViewById<TextView>(R.id.tvNamaLes).text.toString(),
+                                                            view.findViewById<TextView>(R.id.tvJumlahPertemuan).text.toString().substringBefore(" pertemuan"),
+                                                            dataSnapshotSiswa.value.toString()
+                                                        )
                                                     }
                                                     override fun onCancelled(databaseError: DatabaseError) {}
                                                 })
@@ -225,21 +227,41 @@ data class LesAdapter(val mCtx : Context, val layoutResId : Int, val lesList : L
         }
 
         var keyLes = Database.database.getReference("les_siswatutor").push().key
-        Database.database.getReference("les_siswatutor/${keyLes}/id_lessiswa").setValue(les.id_lessiswa)
-        Database.database.getReference("les_siswatutor/${keyLes}/id_tutor").setValue(idTutor)
+        val updates: MutableMap<String, Any?> = HashMap()
+
+        updates["les_gantitutor/${les.id_lessiswa}"] = null
+
+        updates["les_siswatutor/${keyLes}/id_lessiswa"] = les.id_lessiswa
+        updates["les_siswatutor/${keyLes}/id_tutor"] = idTutor
+        updates["les_siswatutor/${keyLes}/idlessiswa_idtutor"] = "${les.id_lessiswa}_${idTutor}"
+        updates["les_siswatutor/${keyLes}/jumlah_presensi"] = tanggalBaru.size
+
+        for (h in 0 until les.waktu_mulai.size) {
+            updates["les_siswatutor/${keyLes}/waktu_mulai/${h}"] = les.waktu_mulai[h]
+        }
+
         for (i in 0 until tanggalBaru.size) {
             var keyPresensi = Database.database.getReference("les_presensi/${keyLes}").push().key
-            Database.database.getReference("les_presensi/${keyLes}/${keyPresensi}/waktu").setValue(tanggalBaru[i])
+            updates["les_presensi/${keyLes}/${keyPresensi}/waktu"] = tanggalBaru[i]
+            updates["les_presensi/${keyLes}/${keyPresensi}/sudah_laporan"] = false
         }
+        Database.database.reference.updateChildren(updates)
+            .addOnSuccessListener {
+                Toast.makeText(mCtx, "berhasil membuat presensi", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(mCtx, "gagal membuat presensi", Toast.LENGTH_SHORT).show()
+            }
     }
 
-    private fun goToUbahLes(les: String, namaLes: String, jumlahPertemuan: String, namaSiswa: String) {
+    private fun goToUbahLes(les: String, namaLes: String, jumlahPertemuan: String, namaSiswa: String, namaTutor: String) {
         Intent(mCtx, BayarLesActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
             it.putExtra(BayarLesActivity.EXTRA_IDLESSISWA, les)
             it.putExtra(BayarLesActivity.EXTRA_NAMASISWA, namaSiswa)
             it.putExtra(BayarLesActivity.EXTRA_NAMALES, namaLes)
             it.putExtra(BayarLesActivity.EXTRA_JUMLAHPERTEMUAN, jumlahPertemuan)
+            it.putExtra(BayarLesActivity.EXTRA_NAMATUTOR, namaTutor)
             mCtx.startActivity(it)
         }
     }

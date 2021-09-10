@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.database.DataSnapshot
@@ -14,12 +14,12 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.R
 import com.lesinaja.les.base.Database
-import com.lesinaja.les.base.walimurid.LesKey
+import com.lesinaja.les.base.tutor.LesGaji
 import com.lesinaja.les.ui.tutor.les.presensi.PresensiTutorActivity
 import java.text.SimpleDateFormat
 
-data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesList : List<LesKey>)
-    : ArrayAdapter<LesKey>(mCtx, layoutResId, lesList) {
+data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesList : List<LesGaji>)
+    : ArrayAdapter<LesGaji>(mCtx, layoutResId, lesList) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val layoutInflater: LayoutInflater = LayoutInflater.from(mCtx)
@@ -37,14 +37,8 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
                         val jenjang = Database.database.getReference("master_jenjangkelas/${dataSnapshotLes.child("jenjangkelas").value}/nama")
                         jenjang.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(dataSnapshotJenjang: DataSnapshot) {
-                                val paket = Database.database.getReference("master_paket/${dataSnapshotLes.child("paket").value}/jumlah_pertemuan")
-                                paket.addValueEventListener(object : ValueEventListener {
-                                    override fun onDataChange(dataSnapshotPaket: DataSnapshot) {
-                                        view.findViewById<TextView>(R.id.tvJumlahPertemuan).text = "${dataSnapshotPaket.value} pertemuan"
-                                        view.findViewById<TextView>(R.id.tvNamaLes).text = "${dataSnapshotMapel.value} ${dataSnapshotJenjang.value}"
-                                    }
-                                    override fun onCancelled(databaseError: DatabaseError) {}
-                                })
+                                view.findViewById<TextView>(R.id.tvJumlahPertemuan).text = "${les.preferensi_tutor} pertemuan"
+                                view.findViewById<TextView>(R.id.tvNamaLes).text = "${dataSnapshotMapel.value} ${dataSnapshotJenjang.value}"
                             }
                             override fun onCancelled(databaseError: DatabaseError) {}
                         })
@@ -63,7 +57,7 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
                     nama.addValueEventListener(object : ValueEventListener {
                         override fun onDataChange(dataSnapshotNama: DataSnapshot) {
                             if (dataSnapshotNama.exists()) {
-                                view.findViewById<TextView>(R.id.tvTutor).text = "Siswa: ${dataSnapshotNama.value}"
+                                view.findViewById<Button>(R.id.tvTutor).text = "Siswa: ${dataSnapshotNama.value}"
                             }
                         }
                         override fun onCancelled(databaseError: DatabaseError) {}
@@ -75,7 +69,7 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
 
         view.findViewById<TextView>(R.id.tvTanggalMulai).text = "Mulai: "+SimpleDateFormat("EEEE, dd MMMM yyyy").format(les.waktu_mulai[0])
 
-        view.findViewById<TextView>(R.id.tvTutor).setOnClickListener {
+        view.findViewById<Button>(R.id.tvTutor).setOnClickListener {
             val ref = Database.database.getReference("siswa/${les.id_siswa}/nama")
             ref.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshotSiswa: DataSnapshot) {
@@ -90,8 +84,21 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
             })
         }
 
-        view.findViewById<ImageView>(R.id.btnUbah).visibility = GONE
-        view.findViewById<TextView>(R.id.tvpembayaranjudul).visibility = GONE
+        view.findViewById<TextView>(R.id.tvpembayaranjudul).text = "Gaji"
+        view.findViewById<ImageView>(R.id.btnUbah).setOnClickListener {
+            val ref = Database.database.getReference("siswa/${les.id_siswa}/nama")
+            ref.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshotSiswa: DataSnapshot) {
+                    goToGaji(
+                        les,
+                        view.findViewById<TextView>(R.id.tvNamaLes).text.toString(),
+                        view.findViewById<TextView>(R.id.tvJumlahPertemuan).text.toString().substringBefore(" pertemuan"),
+                        dataSnapshotSiswa.value.toString()
+                    )
+                }
+                override fun onCancelled(databaseError: DatabaseError) {}
+            })
+        }
 
         view.findViewById<ImageView>(R.id.btnPresensi).setOnClickListener {
             val ref = Database.database.getReference("siswa/${les.id_siswa}/nama")
@@ -111,7 +118,7 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
         return view
     }
 
-    private fun goToDetailLes(les: LesKey, namaLes: String, jumlahPertemuan: String, namaSiswa: String) {
+    private fun goToDetailLes(les: LesGaji, namaLes: String, jumlahPertemuan: String, namaSiswa: String) {
         Intent(mCtx, DetailLesActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
             it.putExtra(DetailLesActivity.EXTRA_IDLESSISWA, les.id_lessiswa)
@@ -132,6 +139,19 @@ data class LesTutorAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
             it.putExtra(PresensiTutorActivity.EXTRA_NAMASISWA, namaSiswa)
             it.putExtra(PresensiTutorActivity.EXTRA_NAMALES, namaLes)
             it.putExtra(PresensiTutorActivity.EXTRA_JUMLAHPERTEMUAN, jumlahPertemuan)
+            mCtx.startActivity(it)
+        }
+    }
+
+    private fun goToGaji(les: LesGaji, namaLes: String, jumlahPertemuan: String, namaSiswa: String) {
+        Intent(mCtx, GajiTutorActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(GajiTutorActivity.EXTRA_IDLESSISWATUTOR, les.id_lessiswatutor)
+            it.putExtra(GajiTutorActivity.EXTRA_NAMASISWA, namaSiswa)
+            it.putExtra(GajiTutorActivity.EXTRA_NAMALES, namaLes)
+            it.putExtra(GajiTutorActivity.EXTRA_JUMLAHPERTEMUAN, jumlahPertemuan)
+            it.putExtra(GajiTutorActivity.EXTRA_GAJITUTOR, les.gaji_tutor.toString())
+            it.putExtra(GajiTutorActivity.EXTRA_TANGGALMULAI, SimpleDateFormat("EEEE, dd MMMM yyyy").format(les.waktu_mulai[0]))
             mCtx.startActivity(it)
         }
     }

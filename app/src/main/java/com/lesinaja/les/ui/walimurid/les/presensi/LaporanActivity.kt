@@ -6,9 +6,13 @@ import android.os.Bundle
 import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityLaporanBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
+import com.lesinaja.les.ui.walimurid.les.BayarLesActivity
+import java.util.HashMap
 
 class LaporanActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLaporanBinding
@@ -33,12 +37,22 @@ class LaporanActivity : AppCompatActivity() {
         binding.btnKembali.setOnClickListener {
             goToPresensi()
         }
+        setToolbar("Laporan Les")
 
         updateUI()
 
         binding.btnKirimLaporan.setOnClickListener {
             updateLaporan()
         }
+    }
+
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -54,7 +68,7 @@ class LaporanActivity : AppCompatActivity() {
 
     private fun loadDataLaporan() {
         val laporan = Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}")
-        laporan.addValueEventListener(object : ValueEventListener {
+        laporan.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     if (dataSnapshot.child("komentar_walimurid").exists()) {
@@ -72,11 +86,42 @@ class LaporanActivity : AppCompatActivity() {
     }
 
     private fun updateLaporan() {
-        if (binding.etLaporanWaliMurid.text.toString().trim() != "" && binding.ratingTutor.rating > 0) {
-            Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/komentar_walimurid").setValue(binding.etLaporanWaliMurid.text.toString().trim())
-            Database.database.getReference("les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/rating_tutor").setValue(binding.ratingTutor.rating)
-            Toast.makeText(this, "berhasil input laporan", Toast.LENGTH_SHORT).show()
-            goToPresensi()
+        if (binding.tvMateri.text == "") {
+            Toast.makeText(this, "tutor belum mengisi laporan", Toast.LENGTH_SHORT).show()
+        }
+        else if (binding.etLaporanWaliMurid.text.toString().trim() != "" && binding.ratingTutor.rating > 0) {
+            val admin = Database.database.getReference("user").orderByChild("roles/admin").equalTo(true)
+            admin.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshotAdmin: DataSnapshot) {
+                    if (dataSnapshotAdmin.exists()) {
+                        for (h in dataSnapshotAdmin.children) {
+                            val updates: MutableMap<String, Any> = HashMap()
+
+                            if (binding.tvJumlahPertemuan.text.toString().substringAfter("Jumlah Pertemuan: ") == binding.tvPertemuan.text.toString().substringAfter("Pertemuan ke-")) {
+                                val keyPembayaran = Database.database.getReference("pembayaran").push().key!!
+                                updates["jumlah_data/pembayaran"] = ServerValue.increment(1)
+                                updates["pembayaran/${keyPembayaran}/idlessiswa"] = intent.getStringExtra(EXTRA_IDLESSISWA).toString()
+                                updates["pembayaran/${keyPembayaran}/id_lessiswatutor"] = intent.getStringExtra(EXTRA_IDLESSISWATUTOR).toString()
+                                updates["pembayaran/${keyPembayaran}/id_pengirim"] = h.key!!
+                                updates["pembayaran/${keyPembayaran}/sudah_dikonfirmasi"] = false
+                            }
+
+                            updates["les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/komentar_walimurid"] = binding.etLaporanWaliMurid.text.toString().trim()
+                            updates["les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/rating_tutor"] = binding.ratingTutor.rating
+                            updates["les_presensi/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/sudah_laporan"] = true
+                            Database.database.reference.updateChildren(updates)
+                                .addOnSuccessListener {
+                                    Toast.makeText(this@LaporanActivity, "berhasil input laporan", Toast.LENGTH_SHORT).show()
+                                    goToPresensi()
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(this@LaporanActivity, "gagal input laporan", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+                    }
+                }
+                override fun onCancelled(databaseError: DatabaseError) {}
+            })
         } else {
             Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
         }
@@ -86,9 +131,9 @@ class LaporanActivity : AppCompatActivity() {
         Intent(this, PresensiActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
             it.putExtra(PresensiActivity.EXTRA_IDLESSISWA, intent.getStringExtra(EXTRA_IDLESSISWA))
-            it.putExtra(PresensiActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA))
-            it.putExtra(PresensiActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES))
-            it.putExtra(PresensiActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN))
+            it.putExtra(PresensiActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA).toString().substringAfter("Siswa: "))
+            it.putExtra(PresensiActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES).toString().substringAfter("Les: "))
+            it.putExtra(PresensiActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN).toString().substringAfter("Jumlah Pertemuan: "))
             startActivity(it)
         }
     }

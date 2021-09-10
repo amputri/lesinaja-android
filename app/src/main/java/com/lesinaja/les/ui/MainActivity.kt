@@ -11,7 +11,7 @@ import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityMainBinding
 import com.lesinaja.les.ui.tutor.akun.AkunTutorActivity
 import com.lesinaja.les.ui.tutor.beranda.BerandaTutorActivity
-import com.lesinaja.les.ui.umum.beranda.BerandaUmumActivity
+import com.lesinaja.les.ui.umum.akun.AkunUmumActivity
 import com.lesinaja.les.ui.walimurid.akun.AkunWaliMuridActivity
 import com.lesinaja.les.ui.walimurid.beranda.BerandaWaliMuridActivity
 
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onCancelled(databaseError: DatabaseError) {}
             })
         } else {
-            goToBerandaUmum()
+            goToAkunUmum()
         }
     }
 
@@ -92,8 +92,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun goToBerandaUmum() {
-        Intent(this, BerandaUmumActivity::class.java).also {
+    private fun goToAkunUmum() {
+        Intent(this, AkunUmumActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(it)
             finish()

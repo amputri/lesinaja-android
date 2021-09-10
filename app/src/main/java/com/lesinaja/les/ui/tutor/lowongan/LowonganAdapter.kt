@@ -38,15 +38,26 @@ data class LowonganAdapter(val mCtx : Context, val layoutResId : Int, val lesLis
                                 jenjang.addValueEventListener(object : ValueEventListener {
                                     override fun onDataChange(dataSnapshotJenjang: DataSnapshot) {
                                         if (dataSnapshotJenjang.exists()) {
-                                            val paket = Database.database.getReference("master_paket/${dataSnapshotLes.child("paket").value}/jumlah_pertemuan")
-                                            paket.addValueEventListener(object : ValueEventListener {
-                                                override fun onDataChange(dataSnapshotPaket: DataSnapshot) {
-                                                    if (dataSnapshotPaket.exists()) {
-                                                        view.findViewById<TextView>(R.id.tvJumlahPertemuan).text = "${dataSnapshotPaket.value} pertemuan"
+                                            val gantiTutor = Database.database.getReference("les_gantitutor/${les.id_lessiswa}/jumlah_pertemuan")
+                                            gantiTutor.addListenerForSingleValueEvent(object : ValueEventListener {
+                                                override fun onDataChange(snapshotGantiTutor: DataSnapshot) {
+                                                    if (snapshotGantiTutor.exists()) {
+                                                        view.findViewById<TextView>(R.id.tvJumlahPertemuan).text = "${snapshotGantiTutor.value} pertemuan"
                                                         view.findViewById<TextView>(R.id.tvNamaLes).text = "${dataSnapshotMapel.value} ${dataSnapshotJenjang.value}"
+                                                    } else {
+                                                        val paket = Database.database.getReference("master_paket/${dataSnapshotLes.child("paket").value}/jumlah_pertemuan")
+                                                        paket.addValueEventListener(object : ValueEventListener {
+                                                            override fun onDataChange(dataSnapshotPaket: DataSnapshot) {
+                                                                if (dataSnapshotPaket.exists()) {
+                                                                    view.findViewById<TextView>(R.id.tvJumlahPertemuan).text = "${dataSnapshotPaket.value} pertemuan"
+                                                                    view.findViewById<TextView>(R.id.tvNamaLes).text = "${dataSnapshotMapel.value} ${dataSnapshotJenjang.value}"
+                                                                }
+                                                            }
+                                                            override fun onCancelled(databaseError: DatabaseError) {}
+                                                        })
                                                     }
                                                 }
-                                                override fun onCancelled(databaseError: DatabaseError) {}
+                                                override fun onCancelled(error: DatabaseError) {}
                                             })
                                         }
                                     }

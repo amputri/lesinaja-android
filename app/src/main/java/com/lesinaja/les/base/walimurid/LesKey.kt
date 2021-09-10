@@ -7,7 +7,5 @@ data class LesKey(
     var id_siswa: String,
     var preferensi_tutor: String,
     var waktu_mulai: Array<Long>
-) {
-    constructor() : this("", 0, "", "","", arrayOf())
-}
+)
 

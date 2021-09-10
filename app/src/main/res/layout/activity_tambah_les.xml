@@ -22,7 +22,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:columnCount="2">
+            app:columnCount="3">
 
             <ImageButton
                 android:id="@+id/btnKembali"
@@ -31,24 +31,24 @@
                 android:background="@color/orange"
                 android:padding="16dp"
                 app:srcCompat="@drawable/ic_kembali"
-                tools:ignore="VectorDrawableCompat"
-                app:tint="@color/white" />
+                app:tint="@color/white"
+                tools:ignore="VectorDrawableCompat" />
 
-            <TextView
-                android:id="@+id/tvJudul"
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/header"
+                android:name="com.lesinaja.les.ui.header.ToolbarFragment"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Ambil Les"
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                app:layout_gravity="center|left" />
+                app:layout_columnSpan="2"
+                app:layout_gravity="fill_horizontal"
+                tools:layout="@layout/fragment_toolbar" />
 
             <View
                 android:id="@+id/divider"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:background="@color/gray"
-                app:layout_columnSpan="2" />
+                app:layout_columnSpan="3" />
 
         </androidx.gridlayout.widget.GridLayout>
     </RelativeLayout>
@@ -173,7 +173,7 @@
                 android:id="@+id/btnTambahLes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginVertical="16dp"
                 android:backgroundTint="@color/green"
                 android:text="Kirim"
                 android:textAllCaps="false" />
@@ -181,7 +181,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_margin="2dp"
                 app:cardCornerRadius="5dp"
                 app:cardElevation="5dp"
                 app:contentPadding="8dp">
@@ -202,7 +202,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/tvBiayaDaftar"
+                        android:id="@+id/tvBiayaDaftarRupiah"
                         android:layout_width="0dp"
                         android:layout_height="18dp"
                         android:layout_marginTop="5dp"
@@ -225,7 +225,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/textViewLes" />
 
                     <TextView
-                        android:id="@+id/tvBiayaLes"
+                        android:id="@+id/tvBiayaLesRupiah"
                         android:layout_width="0dp"
                         android:layout_height="18dp"
                         android:layout_marginTop="5dp"
@@ -233,7 +233,7 @@
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/textViewBiayaLes"
-                        app:layout_constraintTop_toBottomOf="@+id/tvBiayaDaftar" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvBiayaDaftarRupiah" />
 
                     <TextView
                         android:id="@+id/textViewJadwal"
@@ -256,11 +256,21 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toEndOf="@+id/textViewJadwal"
-                        app:layout_constraintTop_toBottomOf="@+id/tvBiayaLes" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvBiayaLesRupiah" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/tvBiayaDaftar"
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
+
+            <TextView
+                android:id="@+id/tvBiayaLes"
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
 
         </LinearLayout>
     </ScrollView>

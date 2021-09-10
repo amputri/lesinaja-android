@@ -8,12 +8,12 @@ import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.R
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
-import com.lesinaja.les.base.walimurid.LesKey
+import com.lesinaja.les.base.tutor.LesGaji
 import com.lesinaja.les.databinding.ActivityLesTutorBinding
 
 class LesTutorActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLesTutorBinding
-    private lateinit var lesList : MutableList<LesKey>
+    private lateinit var lesList : MutableList<LesGaji>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,25 +26,26 @@ class LesTutorActivity : AppCompatActivity() {
 
     private fun setListView() {
         val ref = Database.database.getReference("les_siswatutor").orderByChild("id_tutor").equalTo(Autentikasi.auth.currentUser?.uid)
-        ref.addValueEventListener(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshotLes: DataSnapshot) {
                 if (snapshotLes.exists()) {
                     lesList.clear()
                     for (i in snapshotLes.children) {
                         val lesTutor = Database.database.getReference("les_siswa/${i.child("id_lessiswa").value}")
-                        lesTutor.addValueEventListener(object : ValueEventListener {
+                        lesTutor.addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(h: DataSnapshot) {
                                 if (h.exists()) {
                                     var waktuMulai: Array<Long> = arrayOf()
-                                    for (j in 0 until h.child("waktu_mulai").childrenCount) {
-                                        waktuMulai = waktuMulai.plus(h.child("waktu_mulai/${j}").value.toString().toLong())
+                                    for (j in 0 until i.child("waktu_mulai").childrenCount) {
+                                        waktuMulai = waktuMulai.plus(i.child("waktu_mulai/${j}").value.toString().toLong())
                                     }
-                                    val les = LesKey(
+                                    val les = LesGaji(
+                                        i.key!!,
                                         h.key!!,
                                         h.child("gaji_tutor").value.toString().toInt(),
                                         h.child("id_les").value.toString(),
                                         h.child("id_siswa").value.toString(),
-                                        h.child("preferensi_tutor").value.toString(),
+                                        i.child("jumlah_presensi").value.toString(),
                                         waktuMulai
                                     )
                                     if (les != null) {

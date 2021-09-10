@@ -11,8 +11,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
 import com.lesinaja.les.R
+import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.SiswaKey
 
@@ -67,9 +67,12 @@ data class SiswaAdapter(val mCtx : Context, val layoutResId : Int, val siswaList
         builder.setMessage("yakin ingin menghapus ${siswa.nama}?")
         builder.setPositiveButton("Hapus") { p0,p1 ->
             if (!siswa.status_bayar) {
-                Database.database.getReference("siswa/${siswa.id_siswa}").removeValue()
+                val updates: MutableMap<String, Any?> = HashMap()
+                updates["siswa/${siswa.id_siswa}"] = null
+                updates["jumlah_data/siswa"] = ServerValue.increment(-1)
+                updates["user/${Autentikasi.auth.currentUser?.uid}/roles/jumlah_siswa"] = ServerValue.increment(-1)
+                Database.database.reference.updateChildren(updates)
                     .addOnSuccessListener {
-                        Database.database.getReference("jumlah_data/siswa").setValue(ServerValue.increment(-1))
                         Toast.makeText(mCtx, "berhasil hapus siswa", Toast.LENGTH_SHORT).show()
                     }
                     .addOnFailureListener {

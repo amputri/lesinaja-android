@@ -20,7 +20,7 @@
         android:id="@+id/lvLowongan"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="16dp"
+        android:layout_marginVertical="16dp"
         android:divider="@null"
         app:layout_constraintBottom_toTopOf="@+id/footer"
         app:layout_constraintEnd_toEndOf="parent"

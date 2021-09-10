@@ -6,12 +6,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.format.DateFormat
-import android.widget.Button
 import android.widget.DatePicker
 import android.widget.TimePicker
 import android.widget.Toast
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityUbahJadwalTutorBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -51,6 +51,7 @@ class UbahJadwalTutorActivity: AppCompatActivity(), DatePickerDialog.OnDateSetLi
         binding.btnKembali.setOnClickListener {
             goToPresensi()
         }
+        setToolbar("Ubah Jadwal Les")
 
         updateUI()
 
@@ -61,6 +62,15 @@ class UbahJadwalTutorActivity: AppCompatActivity(), DatePickerDialog.OnDateSetLi
         binding.btnKirimUbahJadwal.setOnClickListener {
             updateJadwal()
         }
+    }
+
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -106,8 +116,13 @@ class UbahJadwalTutorActivity: AppCompatActivity(), DatePickerDialog.OnDateSetLi
     private fun updateJadwal() {
         if (dateTime > 0) {
             Database.database.getReference("les_presensi/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/waktu").setValue(dateTime)
-            Toast.makeText(this, "berhasil ubah jadwal", Toast.LENGTH_SHORT).show()
-            goToPresensi()
+                .addOnSuccessListener {
+                    Toast.makeText(this, "berhasil ubah jadwal", Toast.LENGTH_SHORT).show()
+                    goToPresensi()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "gagal ubah jadwal", Toast.LENGTH_SHORT).show()
+                }
         } else {
             Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
         }
@@ -117,9 +132,9 @@ class UbahJadwalTutorActivity: AppCompatActivity(), DatePickerDialog.OnDateSetLi
         Intent(this, PresensiTutorActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
             it.putExtra(PresensiTutorActivity.EXTRA_IDLESSISWA, intent.getStringExtra(EXTRA_IDLESSISWA))
-            it.putExtra(PresensiTutorActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA))
-            it.putExtra(PresensiTutorActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES))
-            it.putExtra(PresensiTutorActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN))
+            it.putExtra(PresensiTutorActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA).toString().substringAfter("Siswa: "))
+            it.putExtra(PresensiTutorActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES).toString().substringAfter("Les: "))
+            it.putExtra(PresensiTutorActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN).toString().substringAfter("Jumlah Pertemuan: "))
             startActivity(it)
         }
     }

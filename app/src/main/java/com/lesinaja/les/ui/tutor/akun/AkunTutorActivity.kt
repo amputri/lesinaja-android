@@ -11,9 +11,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.DataSnapshot
@@ -28,13 +25,11 @@ import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.umum.Kontak
 import com.lesinaja.les.controller.umum.WilayahController
 import com.lesinaja.les.databinding.ActivityAkunTutorBinding
-import com.lesinaja.les.ui.umum.akun.AkunUmumActivity
 import com.squareup.picasso.Picasso
 import java.io.ByteArrayOutputStream
 
 class AkunTutorActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAkunTutorBinding
-    private lateinit var googleSignInClient: GoogleSignInClient
 
     private lateinit var imageBitmap: Bitmap
     private lateinit var idDesa: String
@@ -87,10 +82,6 @@ class AkunTutorActivity : AppCompatActivity() {
                 Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
             }
         }
-
-        binding.btnKeluar.setOnClickListener {
-            signOut()
-        }
     }
 
     private fun listDataAuth() {
@@ -141,12 +132,28 @@ class AkunTutorActivity : AppCompatActivity() {
                     binding.etBank.setText(dataSnapshot.child("bank").getValue().toString())
                     binding.etNomorRekening.setText(dataSnapshot.child("nomor_rekening").getValue().toString())
 
+                    binding.etMapelAhli.setText("")
                     for (h in dataSnapshot.child("mapel_ahli").children) {
                         idMapelAhli = idMapelAhli.plus(h.value.toString())
+                        val mapelAhli = Database.database.getReference("master_mapel/${h.value}/nama")
+                        mapelAhli.addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshotMapelAhli: DataSnapshot) {
+                                binding.etMapelAhli.setText("${binding.etMapelAhli.text} ${dataSnapshotMapelAhli.value}, ")
+                            }
+                            override fun onCancelled(databaseError: DatabaseError) {}
+                        })
                     }
 
+                    binding.etJenjangAhli.setText("")
                     for (h in dataSnapshot.child("jenjang_ahli").children) {
                         idJenjangAhli = idJenjangAhli.plus(h.value.toString())
+                        val jenjangAhli = Database.database.getReference("master_jenjangkelas/${h.value}/nama")
+                        jenjangAhli.addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshotJenjangAhli: DataSnapshot) {
+                                binding.etJenjangAhli.setText("${binding.etJenjangAhli.text} ${dataSnapshotJenjangAhli.value}, ")
+                            }
+                            override fun onCancelled(databaseError: DatabaseError) {}
+                        })
                     }
                 } else {
                     tutorBaru = true
@@ -370,9 +377,11 @@ class AkunTutorActivity : AppCompatActivity() {
                 })
                 builder.setPositiveButton("KIRIM") { _, _ ->
                     idMapelAhli = arrayOf()
+                    binding.etMapelAhli.setText("")
                     for (i in 0 until id.size) {
                         if (ahli[i]) {
                             idMapelAhli = idMapelAhli.plus(id[i])
+                            binding.etMapelAhli.setText("${binding.etMapelAhli.text} ${nama[i]}, ")
                         }
                     }
                 }
@@ -407,9 +416,11 @@ class AkunTutorActivity : AppCompatActivity() {
                 })
                 builder.setPositiveButton("KIRIM") { _, _ ->
                     idJenjangAhli = arrayOf()
+                    binding.etJenjangAhli.setText("")
                     for (i in 0 until id.size) {
                         if (ahli[i]) {
                             idJenjangAhli = idJenjangAhli.plus(id[i])
+                            binding.etJenjangAhli.setText("${binding.etJenjangAhli.text} ${nama[i]}, ")
                         }
                     }
                 }
@@ -492,22 +503,5 @@ class AkunTutorActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "gagal ubah data auth, coba lagi", Toast.LENGTH_SHORT).show()
             }
-    }
-
-    private fun goToAkunUmum() {
-        Intent(this@AkunTutorActivity, AkunUmumActivity::class.java).also {
-            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(it)
-        }
-    }
-
-    private fun signOut() {
-        Autentikasi.auth.signOut()
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
-        googleSignInClient.signOut()
-
-        goToAkunUmum()
     }
 }

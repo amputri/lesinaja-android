@@ -17,6 +17,18 @@
         tools:layout="@layout/fragment_logo" />
 
     <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_wa"
+        android:name="com.lesinaja.les.ui.header.WhatsappFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/footer"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout="@layout/fragment_whatsapp" />
+
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/footer"
         android:name="com.lesinaja.les.ui.walimurid.FooterWaliMuridFragment"
         android:layout_width="0dp"

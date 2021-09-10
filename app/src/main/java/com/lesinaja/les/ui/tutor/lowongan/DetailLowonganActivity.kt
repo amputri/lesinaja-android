@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
 import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -12,7 +11,10 @@ import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityDetailLowonganBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.*
 
 class DetailLowonganActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailLowonganBinding
@@ -38,6 +40,7 @@ class DetailLowonganActivity : AppCompatActivity() {
         binding.btnKembali.setOnClickListener {
             goToLowongan()
         }
+        setToolbar("Detail Lowongan")
 
         listJadwal = arrayOf()
         binding.tvJadwal.text = ""
@@ -50,6 +53,15 @@ class DetailLowonganActivity : AppCompatActivity() {
         }
     }
 
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
+    }
+
     private fun updateUI() {
         binding.tvNamaLes.text = "${intent.getStringExtra(EXTRA_NAMALES)}"
         binding.tvNamaSiswa.text = "${intent.getStringExtra(EXTRA_NAMASISWA)}"
@@ -58,7 +70,7 @@ class DetailLowonganActivity : AppCompatActivity() {
         loadAlamat()
         loadDataPribadiWaliMurid()
 
-        binding.tvGajiTutor.text = "${intent.getStringExtra(EXTRA_GAJITUTOR)}"
+        binding.tvGajiTutor.text =  "Rp ${NumberFormat.getNumberInstance(Locale("in", "ID")).format(intent.getStringExtra(EXTRA_GAJITUTOR).toString().toInt())}"
 
         loadJadwal()
 
@@ -144,14 +156,27 @@ class DetailLowonganActivity : AppCompatActivity() {
     }
 
     private fun loadJadwal() {
-        val jadwal = Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/waktu_mulai")
-        jadwal.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (i in 0 until dataSnapshot.childrenCount) {
-                        listJadwal = listJadwal.plus(dataSnapshot.child("${i}").value.toString().toLong())
-                        binding.tvJadwal.text = binding.tvJadwal.text.toString()+ SimpleDateFormat("EEEE").format(dataSnapshot.child("${i}").value.toString().toLong())+", jam "+ SimpleDateFormat("hh:mm aaa").format(dataSnapshot.child("${i}").value.toString().toLong())+"\n"
+        val gantiTutor = Database.database.getReference("les_gantitutor/${intent.getStringExtra(EXTRA_IDLESSISWA)}/waktu_mulai")
+        gantiTutor.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshotGantiTutor: DataSnapshot) {
+                if (dataSnapshotGantiTutor.exists()) {
+                    for (i in 0 until dataSnapshotGantiTutor.childrenCount) {
+                        listJadwal = listJadwal.plus(dataSnapshotGantiTutor.child("${i}").value.toString().toLong())
+                        binding.tvJadwal.text = binding.tvJadwal.text.toString()+ SimpleDateFormat("EEEE").format(dataSnapshotGantiTutor.child("${i}").value.toString().toLong())+", jam "+ SimpleDateFormat("hh:mm aaa").format(dataSnapshotGantiTutor.child("${i}").value.toString().toLong())+"\n"
                     }
+                } else {
+                    val jadwal = Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/waktu_mulai")
+                    jadwal.addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                for (i in 0 until dataSnapshot.childrenCount) {
+                                    listJadwal = listJadwal.plus(dataSnapshot.child("${i}").value.toString().toLong())
+                                    binding.tvJadwal.text = binding.tvJadwal.text.toString()+ SimpleDateFormat("EEEE").format(dataSnapshot.child("${i}").value.toString().toLong())+", jam "+ SimpleDateFormat("hh:mm aaa").format(dataSnapshot.child("${i}").value.toString().toLong())+"\n"
+                                }
+                            }
+                        }
+                        override fun onCancelled(databaseError: DatabaseError) {}
+                    })
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {}
@@ -185,7 +210,12 @@ class DetailLowonganActivity : AppCompatActivity() {
             builder.setMessage("yakin ingin ambil lowongan?")
             builder.setPositiveButton("Ambil") { p0,p1 ->
                 Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/id_tutorpelamar/${binding.tvStatus.text.toString().substringAfter("_")}").setValue(Autentikasi.auth.currentUser?.uid)
-                Toast.makeText(applicationContext, "berhasil ambil lowongan", Toast.LENGTH_SHORT).show()
+                    .addOnSuccessListener {
+                        Toast.makeText(applicationContext, "berhasil ambil lowongan", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(applicationContext, "gagal ambil lowongan", Toast.LENGTH_SHORT).show()
+                    }
                 goToLowongan()
             }
             builder.setNegativeButton("Batal") { p0,p1 -> }

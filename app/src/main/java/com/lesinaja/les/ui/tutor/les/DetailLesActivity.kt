@@ -3,14 +3,19 @@ package com.lesinaja.les.ui.tutor.les
 import android.content.Intent
 import android.os.Bundle
 import android.view.View.GONE
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityDetailLowonganBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
+import com.lesinaja.les.ui.tutor.les.presensi.PresensiTutorActivity
+import com.lesinaja.les.ui.tutor.lowongan.DetailLowonganActivity
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.*
 
 class DetailLesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailLowonganBinding
@@ -33,10 +38,10 @@ class DetailLesActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        binding.tvJudul.text = "Detail Les"
         binding.btnKembali.setOnClickListener {
             goToLes()
         }
+        setToolbar("Detail Les")
 
         listJadwal = arrayOf()
 
@@ -47,6 +52,15 @@ class DetailLesActivity : AppCompatActivity() {
         binding.btnAmbilLowongan.visibility = GONE
     }
 
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
+    }
+
     private fun updateUI() {
         binding.tvNamaLes.text = "${intent.getStringExtra(EXTRA_NAMALES)}"
         binding.tvNamaSiswa.text = "${intent.getStringExtra(EXTRA_NAMASISWA)}"
@@ -55,7 +69,7 @@ class DetailLesActivity : AppCompatActivity() {
         loadAlamat()
         loadDataPribadiWaliMurid()
 
-        binding.tvGajiTutor.text = "${intent.getStringExtra(EXTRA_GAJITUTOR)}"
+        binding.tvGajiTutor.text = "Rp ${NumberFormat.getNumberInstance(Locale("in", "ID")).format(intent.getStringExtra(EXTRA_GAJITUTOR).toString().toInt())}"
 
         loadJadwal()
 
@@ -138,12 +152,18 @@ class DetailLesActivity : AppCompatActivity() {
     }
 
     private fun loadJadwal() {
-        val jadwal = Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/waktu_mulai")
-        jadwal.addValueEventListener(object : ValueEventListener {
+        val jadwal = Database.database.getReference("les_siswatutor")
+            .orderByChild("idlessiswa_idtutor")
+            .equalTo("${intent.getStringExtra(EXTRA_IDLESSISWA)}_${Autentikasi.auth.currentUser?.uid}")
+        jadwal.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (i in 0 until dataSnapshot.childrenCount) {
-                    listJadwal = listJadwal.plus(dataSnapshot.child("${i}").value.toString().toLong())
-                    binding.tvJadwal.text = binding.tvJadwal.text.toString()+ SimpleDateFormat("EEEE").format(dataSnapshot.child("${i}").value.toString().toLong())+", jam "+ SimpleDateFormat("hh:mm aaa").format(dataSnapshot.child("${i}").value.toString().toLong())+"\n"
+                if (dataSnapshot.exists()) {
+                    for (h in dataSnapshot.children) {
+                        for (i in 0 until h.child("waktu_mulai").childrenCount) {
+                            listJadwal = listJadwal.plus(h.child("waktu_mulai/${i}").value.toString().toLong())
+                            binding.tvJadwal.text = binding.tvJadwal.text.toString()+ SimpleDateFormat("EEEE").format(h.child("waktu_mulai/${i}").value.toString().toLong())+", jam "+ SimpleDateFormat("hh:mm aaa").format(h.child("waktu_mulai/${i}").value.toString().toLong())+"\n"
+                        }
+                    }
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {}

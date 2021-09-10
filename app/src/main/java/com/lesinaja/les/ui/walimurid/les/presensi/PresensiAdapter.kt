@@ -28,19 +28,11 @@ data class PresensiAdapter(val mCtx : Context, val layoutResId : Int, val presen
         view.findViewById<TextView>(R.id.tvTanggal).text = SimpleDateFormat("EEEE, dd MMMM yyyy").format(presensi.waktu)
         view.findViewById<TextView>(R.id.tvJam).text = "Jam "+SimpleDateFormat("hh:mm aaa").format(presensi.waktu)+" (Pertemuan ke-"+(position+1)+")"
 
-        val tutor = Database.database.getReference("les_siswa/${presensi.id_lessiswa}/id_tutor")
-        tutor.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshotTutor: DataSnapshot) {
-                if (dataSnapshotTutor.exists()) {
-                    val nama = Database.database.getReference("user/${dataSnapshotTutor.value}/nama")
-                    nama.addValueEventListener(object : ValueEventListener {
-                        override fun onDataChange(dataSnapshotNama: DataSnapshot) {
-                            if (dataSnapshotNama.exists()) {
-                                view.findViewById<TextView>(R.id.tvTutor).text = "Tutor: ${dataSnapshotNama.value}"
-                            }
-                        }
-                        override fun onCancelled(databaseError: DatabaseError) {}
-                    })
+        val nama = Database.database.getReference("user/${presensi.id_tutor}/nama")
+        nama.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshotNama: DataSnapshot) {
+                if (dataSnapshotNama.exists()) {
+                    view.findViewById<TextView>(R.id.tvTutor).text = "Tutor: ${dataSnapshotNama.value}"
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {}

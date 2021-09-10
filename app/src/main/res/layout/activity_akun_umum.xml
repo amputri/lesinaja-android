@@ -6,15 +6,44 @@
     android:layout_height="match_parent"
     tools:context=".ui.umum.akun.AkunUmumActivity">
 
-    <androidx.fragment.app.FragmentContainerView
+    <RelativeLayout
         android:id="@+id/header"
-        android:name="com.lesinaja.les.ui.header.LogoFragment"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/fragment_logo" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/orange"
+            app:columnCount="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="100dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="16dp"
+                app:layout_columnSpan="2"
+                app:srcCompat="@drawable/logo" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/gray"
+                app:layout_columnSpan="2" />
+
+        </androidx.gridlayout.widget.GridLayout>
+
+    </RelativeLayout>
+
 
     <Button
         android:id="@+id/btnMasukWaliMurid"
@@ -49,13 +78,16 @@
         app:layout_constraintTop_toBottomOf="@+id/btnMasukWaliMurid" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/footer"
-        android:name="com.lesinaja.les.ui.umum.FooterUmumFragment"
-        android:layout_width="0dp"
+        android:id="@+id/fragment_wa"
+        android:name="com.lesinaja.les.ui.header.WhatsappFragment"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout="@layout/fragment_footer_umum" />
+        tools:layout="@layout/fragment_whatsapp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,12 +11,15 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.walimurid.DataLes
 import com.lesinaja.les.databinding.ActivityTambahLesBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -60,6 +63,7 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
         binding.btnKembali.setOnClickListener {
             goToLes()
         }
+        setToolbar("Tambah Les")
 
         updateUI()
 
@@ -82,6 +86,15 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
         }
     }
 
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
+    }
+
     private fun updateUI() {
         val statusBayar = Database.database.getReference("siswa/${intent.getStringExtra(EXTRA_IDSISWA)}/status_bayar")
         statusBayar.addValueEventListener(object : ValueEventListener {
@@ -89,8 +102,10 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
                 if (dataSnapshotBayar.exists()) {
                     if (dataSnapshotBayar.value.toString() != "true") {
                         binding.tvBiayaDaftar.text = intent.getStringExtra(EXTRA_BIAYADAFTAR).toString()
+                        binding.tvBiayaDaftarRupiah.text = "Rp ${NumberFormat.getNumberInstance(Locale("in", "ID")).format(intent.getStringExtra(EXTRA_BIAYADAFTAR).toString().toInt())}"
                     } else {
                         binding.tvBiayaDaftar.text = "-"
+                        binding.tvBiayaDaftarRupiah.text = "-"
                     }
                 }
             }
@@ -177,7 +192,8 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
                 biayaLes = selectedObject.id.substringAfter("//").substringBefore("**").toInt()
                 total = biayaDaftar + biayaLes
                 binding.tvBiayaLes.text = biayaLes.toString()
-                binding.tvTotal.text = total.toString()
+                binding.tvBiayaLesRupiah.text = "Rp ${NumberFormat.getNumberInstance(Locale("in", "ID")).format(biayaLes)}"
+                binding.tvTotal.text = "Rp ${NumberFormat.getNumberInstance(Locale("in", "ID")).format(total)}"
             }
         }
     }
@@ -244,6 +260,8 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
         Database.database.getReference("les_siswa/${key}").setValue(dataLes)
             .addOnSuccessListener {
                 val updates: MutableMap<String, Any> = HashMap()
+                updates["jumlah_data/les_siswa"] = ServerValue.increment(1)
+                updates["siswa/${intent.getStringExtra(EXTRA_IDSISWA)}/jumlah_les"] = ServerValue.increment(1)
                 for (i in 0 until listJadwal.size) {
                     updates["les_siswa/${key}/waktu_mulai/${i}"] = listJadwal[i]
                 }

@@ -18,6 +18,7 @@ import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.walimurid.DataSiswa
 import com.lesinaja.les.controller.walimurid.akun.DataSiswaController
 import com.lesinaja.les.databinding.ActivityTambahSiswaBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
 
 class TambahSiswaActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTambahSiswaBinding
@@ -32,6 +33,7 @@ class TambahSiswaActivity : AppCompatActivity() {
         binding.btnKembali.setOnClickListener {
             goToSiswa()
         }
+        setToolbar("Tambah Siswa")
 
         getBiayaDaftar()
 
@@ -44,6 +46,15 @@ class TambahSiswaActivity : AppCompatActivity() {
                 Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun getBiayaDaftar() {
@@ -112,9 +123,12 @@ class TambahSiswaActivity : AppCompatActivity() {
         )
 
         val key = Database.database.getReference("siswa").push().key!!
-        Database.database.getReference("siswa/${key}").setValue(dataSiswa)
+        val updates: MutableMap<String, Any> = HashMap()
+        updates["siswa/${key}"] = dataSiswa
+        updates["jumlah_data/siswa"] = ServerValue.increment(1)
+        updates["user/${Autentikasi.auth.currentUser?.uid}/roles/jumlah_siswa"] = ServerValue.increment(1)
+        Database.database.reference.updateChildren(updates)
             .addOnSuccessListener {
-                Database.database.getReference("jumlah_data/siswa").setValue(ServerValue.increment(1))
                 Toast.makeText(this, "berhasil tambah siswa", Toast.LENGTH_SHORT).show()
                 goToSiswa()
             }

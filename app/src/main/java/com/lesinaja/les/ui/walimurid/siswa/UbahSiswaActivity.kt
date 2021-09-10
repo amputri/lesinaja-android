@@ -10,6 +10,7 @@ import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.controller.walimurid.akun.DataSiswaController
 import com.lesinaja.les.databinding.ActivityTambahSiswaBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
 
 class UbahSiswaActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTambahSiswaBinding
@@ -29,10 +30,10 @@ class UbahSiswaActivity : AppCompatActivity() {
         binding = ActivityTambahSiswaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.tvJudul.text = "Ubah Siswa"
         binding.btnKembali.setOnClickListener {
             goToSiswa()
         }
+        setToolbar("Ubah Data Siswa")
 
         binding.etNamaSiswa.setText(intent.getStringExtra(EXTRA_NAMA))
         binding.etNamaSekolah.setText(intent.getStringExtra(EXTRA_SEKOLAH))
@@ -46,6 +47,15 @@ class UbahSiswaActivity : AppCompatActivity() {
                 Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun setJenjangKelasAdapter() {

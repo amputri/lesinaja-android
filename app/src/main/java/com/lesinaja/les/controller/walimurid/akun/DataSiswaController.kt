@@ -5,7 +5,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.umum.Wilayah
-import com.lesinaja.les.base.walimurid.DataSiswa
 
 class DataSiswaController {
     fun getJenjang(idJenjang: String, namaJenjang: String): ArrayList<Wilayah> {

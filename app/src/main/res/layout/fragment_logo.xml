@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/orange"
-        app:columnCount="2"
+        app:columnCount="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,12 +24,20 @@
             app:layout_columnSpan="2"
             app:srcCompat="@drawable/logo" />
 
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentLogout"
+            android:name="com.lesinaja.les.ui.header.LogoutFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_gravity="right"
+            tools:layout="@layout/fragment_logout" />
+
         <View
             android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@color/gray"
-            app:layout_columnSpan="2" />
+            app:layout_columnSpan="3" />
 
     </androidx.gridlayout.widget.GridLayout>
 

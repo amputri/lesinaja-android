@@ -280,31 +280,65 @@
                     android:textCursorDrawable="@drawable/black_cursor" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textMapelAhli"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Pelajaran Ahli"
+                app:boxStrokeColor="@color/orange"
+                app:hintTextColor="@color/orange">
+
+                <EditText
+                    android:id="@+id/etMapelAhli"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:ems="10"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:textCursorDrawable="@drawable/black_cursor" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
                 android:id="@+id/btnMapelAhli"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="@color/white"
-                android:fontFamily="sans-serif"
-                android:text="Pilih Pelajaran Ahli"
-                android:textAlignment="viewStart"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:gravity="start" />
+                android:textColor="@color/green"
+                android:layout_marginTop="5dp"
+                android:text="Pilih Pelajaran Ahli" />
 
-            <Button
-                android:id="@+id/btnJenjangAhli"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textJenjangAhli"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:backgroundTint="@color/white"
-                android:fontFamily="sans-serif"
-                android:text="Pilih Jenjang Ahli"
-                android:textAlignment="viewStart"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:gravity="start" />
+                android:hint="Jenjang Ahli"
+                app:boxStrokeColor="@color/orange"
+                app:hintTextColor="@color/orange">
+
+                <EditText
+                    android:id="@+id/etJenjangAhli"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:ems="10"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:textCursorDrawable="@drawable/black_cursor" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/btnJenjangAhli"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/green"
+                android:text="Pilih Jenjang Ahli" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textPengalamanMengajar"
@@ -398,16 +432,6 @@
                 android:backgroundTint="@color/green"
                 android:text="Simpan Profil"
                 android:textAllCaps="false" />
-
-            <Button
-                android:id="@+id/btnKeluar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="@color/white"
-                android:text="Keluar"
-                android:textAllCaps="false"
-                android:textColor="@color/pink" />
 
         </LinearLayout>
     </ScrollView>

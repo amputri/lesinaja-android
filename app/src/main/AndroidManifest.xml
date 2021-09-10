@@ -13,13 +13,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LesinAja">
         <activity
-            android:screenOrientation="portrait"
-            android:name=".ui.walimurid.les.BayarLesActivity">
-        </activity>
+            android:name=".ui.tutor.les.GajiTutorActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.walimurid.les.PerpanjangLesActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.walimurid.les.BayarLesActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.tutor.les.presensi.LaporanTutorActivity"
             android:noHistory="true"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.tutor.les.presensi.UbahJadwalTutorActivity"
             android:noHistory="true"
@@ -98,9 +105,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.umum.akun.AkunUmumActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.umum.beranda.BerandaUmumActivity"
             android:screenOrientation="portrait" />
     </application>
 

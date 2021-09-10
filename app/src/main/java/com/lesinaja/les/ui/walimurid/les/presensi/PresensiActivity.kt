@@ -10,7 +10,9 @@ import com.lesinaja.les.R
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.presensi.Presensi
 import com.lesinaja.les.databinding.ActivityPresensiBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
 import com.lesinaja.les.ui.walimurid.les.LesActivity
+import com.lesinaja.les.ui.walimurid.les.PerpanjangLesActivity
 import java.util.*
 
 class PresensiActivity : AppCompatActivity() {
@@ -32,12 +34,26 @@ class PresensiActivity : AppCompatActivity() {
         binding.btnKembali.setOnClickListener {
             goToLes()
         }
+        setToolbar("Presensi Les")
 
         presensiList = mutableListOf()
 
         updateUI()
 
+        binding.btnPerpanjangLes.setOnClickListener {
+            goToPerpanjangLes()
+        }
+
         setListView()
+    }
+
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -48,13 +64,13 @@ class PresensiActivity : AppCompatActivity() {
 
     private fun setListView() {
         val ref = Database.database.getReference("les_siswatutor").orderByChild("id_lessiswa").equalTo(intent.getStringExtra(EXTRA_IDLESSISWA))
-        ref.addValueEventListener(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     presensiList.clear()
                     for (h in snapshot.children) {
                         val presensi = Database.database.getReference("les_presensi/${h.key}")
-                        presensi.addValueEventListener(object : ValueEventListener {
+                        presensi.addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(snapshotPresensi: DataSnapshot) {
                                 if (snapshotPresensi.exists()) {
                                     for (i in snapshotPresensi.children) {
@@ -87,6 +103,17 @@ class PresensiActivity : AppCompatActivity() {
     private fun goToLes() {
         Intent(this, LesActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(it)
+        }
+    }
+
+    private fun goToPerpanjangLes() {
+        Intent(this, PerpanjangLesActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            it.putExtra(PerpanjangLesActivity.EXTRA_IDLESSISWA, intent.getStringExtra(EXTRA_IDLESSISWA))
+            it.putExtra(PerpanjangLesActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA).toString().substringAfter("Siswa: "))
+            it.putExtra(PerpanjangLesActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES).toString().substringAfter("Les: "))
+            it.putExtra(PerpanjangLesActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN).toString().substringAfter("Jumlah Pertemuan: "))
             startActivity(it)
         }
     }

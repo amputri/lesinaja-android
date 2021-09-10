@@ -10,6 +10,7 @@ import com.lesinaja.les.R
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.HeaderLes
 import com.lesinaja.les.databinding.ActivityTutorPelamarBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
 import com.lesinaja.les.ui.walimurid.les.LesActivity
 
 class TutorPelamarActivity : AppCompatActivity() {
@@ -33,10 +34,20 @@ class TutorPelamarActivity : AppCompatActivity() {
         binding.btnKembali.setOnClickListener {
             goToLes()
         }
+        setToolbar("Daftar Tutor Pelamar")
 
         updateUI()
 
         setListView()
+    }
+
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -48,11 +59,10 @@ class TutorPelamarActivity : AppCompatActivity() {
 
     private fun setListView() {
         val ref = Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/id_tutorpelamar")
-        ref.addValueEventListener(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                idPelamarList.clear()
                 if (snapshot.exists()) {
-                    idPelamarList.clear()
-
                     for (h in 0 until snapshot.childrenCount) {
                         idPelamarList.add(HeaderLes(
                             intent.getStringExtra(EXTRA_IDLESSISWA).toString(),

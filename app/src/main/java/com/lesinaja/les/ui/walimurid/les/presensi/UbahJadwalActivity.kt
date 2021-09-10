@@ -11,6 +11,7 @@ import android.widget.TimePicker
 import android.widget.Toast
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityUbahJadwalBinding
+import com.lesinaja.les.ui.header.ToolbarFragment
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,6 +51,7 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         binding.btnKembali.setOnClickListener {
             goToPresensi()
         }
+        setToolbar("Ubah Jadwal Les")
 
         updateUI()
 
@@ -60,6 +62,15 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         binding.btnKirimUbahJadwal.setOnClickListener {
             updateJadwal()
         }
+    }
+
+    private fun setToolbar(judul: String) {
+        val toolbarFragment = ToolbarFragment()
+        val bundle = Bundle()
+
+        bundle.putString("judul", judul)
+        toolbarFragment.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(binding.header.id, toolbarFragment).commit()
     }
 
     private fun updateUI() {
@@ -106,8 +117,13 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
     private fun updateJadwal() {
         if (dateTime > 0) {
             Database.database.getReference("les_presensi/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/waktu").setValue(dateTime)
-            Toast.makeText(this, "berhasil ubah jadwal", Toast.LENGTH_SHORT).show()
-            goToPresensi()
+                .addOnSuccessListener {
+                    Toast.makeText(this, "berhasil ubah jadwal", Toast.LENGTH_SHORT).show()
+                    goToPresensi()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "gagal ubah jadwal", Toast.LENGTH_SHORT).show()
+                }
         } else {
             Toast.makeText(this, "data belum valid", Toast.LENGTH_SHORT).show()
         }
@@ -117,9 +133,9 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         Intent(this, PresensiActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
             it.putExtra(PresensiActivity.EXTRA_IDLESSISWA, intent.getStringExtra(EXTRA_IDLESSISWA))
-            it.putExtra(PresensiActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA))
-            it.putExtra(PresensiActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES))
-            it.putExtra(PresensiActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN))
+            it.putExtra(PresensiActivity.EXTRA_NAMASISWA, intent.getStringExtra(EXTRA_NAMASISWA).toString().substringAfter("Siswa: "))
+            it.putExtra(PresensiActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES).toString().substringAfter("Les: "))
+            it.putExtra(PresensiActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN).toString().substringAfter("Jumlah Pertemuan: "))
             startActivity(it)
         }
     }

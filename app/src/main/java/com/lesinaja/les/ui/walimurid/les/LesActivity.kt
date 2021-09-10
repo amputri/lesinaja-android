@@ -58,27 +58,58 @@ class LesActivity : AppCompatActivity() {
         binding.lvLes.adapter = null
 
         val ref = Database.database.getReference("les_siswa").orderByChild("id_siswa").equalTo(idSiswa)
-        ref.addValueEventListener(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     for (h in snapshot.children) {
                         var waktuMulai: Array<Long> = arrayOf()
-                        for (j in 0 until h.child("waktu_mulai").childrenCount) {
-                            waktuMulai = waktuMulai.plus(h.child("waktu_mulai/${j}").value.toString().toLong())
-                        }
-                        val les = LesKey(
-                            h.key!!,
-                            h.child("gaji_tutor").value.toString().toInt(),
-                            h.child("id_les").value.toString(),
-                            h.child("id_siswa").value.toString(),
-                            h.child("preferensi_tutor").value.toString(),
-                            waktuMulai
-                        )
-                        lesList.add(les)
-                    }
 
-                    val adapter = LesAdapter(this@LesActivity, com.lesinaja.les.R.layout.item_les, lesList)
-                    binding.lvLes.adapter = adapter
+                        val gantiTutor = Database.database.getReference("les_gantitutor/${h.key}/waktu_mulai")
+                        gantiTutor.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshotGantiTutor: DataSnapshot) {
+                                if (snapshotGantiTutor.exists()) {
+                                    for (j in 0 until snapshotGantiTutor.childrenCount) {
+                                        waktuMulai = waktuMulai.plus(snapshotGantiTutor.child("${j}").value.toString().toLong())
+                                    }
+
+                                    val les = LesKey(
+                                        h.key!!,
+                                        h.child("gaji_tutor").value.toString().toInt(),
+                                        h.child("id_les").value.toString(),
+                                        h.child("id_siswa").value.toString(),
+                                        h.child("preferensi_tutor").value.toString(),
+                                        waktuMulai
+                                    )
+                                    if (les != null) {
+                                        lesList.add(les)
+                                    }
+
+                                    val adapter = LesAdapter(this@LesActivity, com.lesinaja.les.R.layout.item_les, lesList)
+                                    binding.lvLes.adapter = adapter
+                                } else {
+                                    for (j in 0 until h.child("waktu_mulai").childrenCount) {
+                                        waktuMulai = waktuMulai.plus(h.child("waktu_mulai/${j}").value.toString().toLong())
+                                    }
+
+                                    val les = LesKey(
+                                        h.key!!,
+                                        h.child("gaji_tutor").value.toString().toInt(),
+                                        h.child("id_les").value.toString(),
+                                        h.child("id_siswa").value.toString(),
+                                        h.child("preferensi_tutor").value.toString(),
+                                        waktuMulai
+                                    )
+                                    if (les != null) {
+                                        lesList.add(les)
+                                    }
+
+                                    val adapter = LesAdapter(this@LesActivity, com.lesinaja.les.R.layout.item_les, lesList)
+                                    binding.lvLes.adapter = adapter
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {}
+                        })
+                    }
                 }
             }
             override fun onCancelled(error: DatabaseError) {}

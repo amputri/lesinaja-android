@@ -26,38 +26,68 @@ class LowonganActivity : AppCompatActivity() {
         lesList = mutableListOf()
 
         val desa = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/kontak/id_desa")
-        desa.addValueEventListener(object : ValueEventListener {
+        desa.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     val gender = Database.database.getReference("user_role/tutor/${Autentikasi.auth.currentUser?.uid}/jenis_kelamin")
-                    gender.addValueEventListener(object : ValueEventListener {
+                    gender.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshotGender: DataSnapshot) {
                             if (dataSnapshotGender.exists()) {
                                 lesList.clear()
 
                                 val refBebas = Database.database.getReference("les_siswa").orderByChild("wilayah_preferensi").equalTo("${dataSnapshot.value.toString().substring(0,4)}_bebas")
-                                refBebas.addValueEventListener(object : ValueEventListener {
+                                refBebas.addListenerForSingleValueEvent(object : ValueEventListener {
                                     override fun onDataChange(snapshotBebas: DataSnapshot) {
                                         if (snapshotBebas.exists()) {
                                             for (h in snapshotBebas.children) {
                                                 var waktuMulai: Array<Long> = arrayOf()
-                                                for (j in 0 until h.child("waktu_mulai").childrenCount) {
-                                                    waktuMulai = waktuMulai.plus(h.child("waktu_mulai/${j}").value.toString().toLong())
-                                                }
-                                                val les = LesKey(
-                                                    h.key!!,
-                                                    h.child("gaji_tutor").value.toString().toInt(),
-                                                    h.child("id_les").value.toString(),
-                                                    h.child("id_siswa").value.toString(),
-                                                    h.child("preferensi_tutor").value.toString(),
-                                                    waktuMulai
-                                                )
-                                                if (les != null) {
-                                                    lesList.add(les)
-                                                }
+
+                                                val gantiTutor = Database.database.getReference("les_gantitutor/${h.key}/waktu_mulai")
+                                                gantiTutor.addListenerForSingleValueEvent(object : ValueEventListener {
+                                                    override fun onDataChange(snapshotGantiTutor: DataSnapshot) {
+                                                        if (snapshotGantiTutor.exists()) {
+                                                            for (j in 0 until snapshotGantiTutor.childrenCount) {
+                                                                waktuMulai = waktuMulai.plus(snapshotGantiTutor.child("${j}").value.toString().toLong())
+                                                            }
+
+                                                            val les = LesKey(
+                                                                h.key!!,
+                                                                h.child("gaji_tutor").value.toString().toInt(),
+                                                                h.child("id_les").value.toString(),
+                                                                h.child("id_siswa").value.toString(),
+                                                                h.child("preferensi_tutor").value.toString(),
+                                                                waktuMulai
+                                                            )
+                                                            if (les != null) {
+                                                                lesList.add(les)
+                                                            }
+
+                                                            val adapter = LowonganAdapter(this@LowonganActivity, R.layout.item_lowongan, lesList)
+                                                            binding.lvLowongan.adapter = adapter
+                                                        } else {
+                                                            for (j in 0 until h.child("waktu_mulai").childrenCount) {
+                                                                waktuMulai = waktuMulai.plus(h.child("waktu_mulai/${j}").value.toString().toLong())
+                                                            }
+
+                                                            val les = LesKey(
+                                                                h.key!!,
+                                                                h.child("gaji_tutor").value.toString().toInt(),
+                                                                h.child("id_les").value.toString(),
+                                                                h.child("id_siswa").value.toString(),
+                                                                h.child("preferensi_tutor").value.toString(),
+                                                                waktuMulai
+                                                            )
+                                                            if (les != null) {
+                                                                lesList.add(les)
+                                                            }
+
+                                                            val adapter = LowonganAdapter(this@LowonganActivity, R.layout.item_lowongan, lesList)
+                                                            binding.lvLowongan.adapter = adapter
+                                                        }
+                                                    }
+                                                    override fun onCancelled(error: DatabaseError) {}
+                                                })
                                             }
-                                            val adapter = LowonganAdapter(this@LowonganActivity, R.layout.item_lowongan, lesList)
-                                            binding.lvLowongan.adapter = adapter
                                         }
                                     }
                                     override fun onCancelled(error: DatabaseError) {}
@@ -69,28 +99,58 @@ class LowonganActivity : AppCompatActivity() {
                                 } else if (dataSnapshotGender.value.toString() == "perempuan") {
                                     ref = Database.database.getReference("les_siswa").orderByChild("wilayah_preferensi").equalTo("${dataSnapshot.value.toString().substring(0,4)}_perempuan")
                                 }
-                                ref.addValueEventListener(object : ValueEventListener {
+                                ref.addListenerForSingleValueEvent(object : ValueEventListener {
                                     override fun onDataChange(snapshot: DataSnapshot) {
                                         if (snapshot.exists()) {
                                             for (h in snapshot.children) {
                                                 var waktuMulai: Array<Long> = arrayOf()
-                                                for (j in 0 until h.child("waktu_mulai").childrenCount) {
-                                                    waktuMulai = waktuMulai.plus(h.child("waktu_mulai/${j}").value.toString().toLong())
-                                                }
-                                                val les = LesKey(
-                                                    h.key!!,
-                                                    h.child("gaji_tutor").value.toString().toInt(),
-                                                    h.child("id_les").value.toString(),
-                                                    h.child("id_siswa").value.toString(),
-                                                    h.child("preferensi_tutor").value.toString(),
-                                                    waktuMulai
-                                                )
-                                                if (les != null) {
-                                                    lesList.add(les)
-                                                }
+
+                                                val gantiTutor = Database.database.getReference("les_gantitutor/${h.key}/waktu_mulai")
+                                                gantiTutor.addListenerForSingleValueEvent(object : ValueEventListener {
+                                                    override fun onDataChange(snapshotGantiTutor: DataSnapshot) {
+                                                        if (snapshotGantiTutor.exists()) {
+                                                            for (j in 0 until snapshotGantiTutor.childrenCount) {
+                                                                waktuMulai = waktuMulai.plus(snapshotGantiTutor.child("${j}").value.toString().toLong())
+                                                            }
+
+                                                            val les = LesKey(
+                                                                h.key!!,
+                                                                h.child("gaji_tutor").value.toString().toInt(),
+                                                                h.child("id_les").value.toString(),
+                                                                h.child("id_siswa").value.toString(),
+                                                                h.child("preferensi_tutor").value.toString(),
+                                                                waktuMulai
+                                                            )
+                                                            if (les != null) {
+                                                                lesList.add(les)
+                                                            }
+
+                                                            val adapter = LowonganAdapter(this@LowonganActivity, R.layout.item_lowongan, lesList)
+                                                            binding.lvLowongan.adapter = adapter
+                                                        } else {
+                                                            for (j in 0 until h.child("waktu_mulai").childrenCount) {
+                                                                waktuMulai = waktuMulai.plus(h.child("waktu_mulai/${j}").value.toString().toLong())
+                                                            }
+
+                                                            val les = LesKey(
+                                                                h.key!!,
+                                                                h.child("gaji_tutor").value.toString().toInt(),
+                                                                h.child("id_les").value.toString(),
+                                                                h.child("id_siswa").value.toString(),
+                                                                h.child("preferensi_tutor").value.toString(),
+                                                                waktuMulai
+                                                            )
+                                                            if (les != null) {
+                                                                lesList.add(les)
+                                                            }
+
+                                                            val adapter = LowonganAdapter(this@LowonganActivity, R.layout.item_lowongan, lesList)
+                                                            binding.lvLowongan.adapter = adapter
+                                                        }
+                                                    }
+                                                    override fun onCancelled(error: DatabaseError) {}
+                                                })
                                             }
-                                            val adapter = LowonganAdapter(this@LowonganActivity, R.layout.item_lowongan, lesList)
-                                            binding.lvLowongan.adapter = adapter
                                         }
                                     }
                                     override fun onCancelled(error: DatabaseError) {}

@@ -22,7 +22,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:columnCount="2">
+            app:columnCount="3">
 
             <ImageButton
                 android:id="@+id/btnKembali"
@@ -31,24 +31,24 @@
                 android:background="@color/orange"
                 android:padding="16dp"
                 app:srcCompat="@drawable/ic_kembali"
-                tools:ignore="VectorDrawableCompat"
-                app:tint="@color/white" />
+                app:tint="@color/white"
+                tools:ignore="VectorDrawableCompat" />
 
-            <TextView
-                android:id="@+id/tvJudul"
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/header"
+                android:name="com.lesinaja.les.ui.header.ToolbarFragment"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Tambah Siswa"
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                app:layout_gravity="center|left" />
+                app:layout_columnSpan="2"
+                app:layout_gravity="fill_horizontal"
+                tools:layout="@layout/fragment_toolbar" />
 
             <View
                 android:id="@+id/divider"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:background="@color/gray"
-                app:layout_columnSpan="2" />
+                app:layout_columnSpan="3" />
 
         </androidx.gridlayout.widget.GridLayout>
     </RelativeLayout>

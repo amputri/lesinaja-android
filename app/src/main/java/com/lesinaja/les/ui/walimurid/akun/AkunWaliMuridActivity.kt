@@ -1,15 +1,11 @@
 package com.lesinaja.les.ui.walimurid.akun
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -23,11 +19,9 @@ import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.walimurid.DataWaliMurid
 import com.lesinaja.les.controller.umum.WilayahController
 import com.lesinaja.les.databinding.ActivityAkunWaliMuridBinding
-import com.lesinaja.les.ui.umum.akun.AkunUmumActivity
 
 class AkunWaliMuridActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAkunWaliMuridBinding
-    private lateinit var googleSignInClient: GoogleSignInClient
 
     private lateinit var idDesa: String
     private lateinit var listReferensi: Array<String>
@@ -42,10 +36,6 @@ class AkunWaliMuridActivity : AppCompatActivity() {
         listDataAuth()
         listDataKontak()
         listDataWaliMurid()
-
-        binding.btnKeluar.setOnClickListener {
-            signOut()
-        }
 
         binding.btnUbahProfil.setOnClickListener {
             if (validateInputData()) {
@@ -266,22 +256,5 @@ class AkunWaliMuridActivity : AppCompatActivity() {
                 idDesa = selectedObject.id
             }
         }
-    }
-
-    private fun goToAkunUmum() {
-        Intent(this@AkunWaliMuridActivity, AkunUmumActivity::class.java).also {
-            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(it)
-        }
-    }
-
-    private fun signOut() {
-        Autentikasi.auth.signOut()
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
-        googleSignInClient.signOut()
-
-        goToAkunUmum()
     }
 }

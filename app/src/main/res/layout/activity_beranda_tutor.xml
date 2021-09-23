@@ -1,41 +1,84 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".ui.tutor.beranda.BerandaTutorActivity">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/header"
-        android:name="com.lesinaja.les.ui.header.LogoFragment"
-        android:layout_width="0dp"
+    <RelativeLayout
+        android:id="@+id/containerHeader"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/fragment_logo" />
+        android:layout_alignParentTop="true">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/header"
+            android:name="com.lesinaja.les.ui.header.LogoFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_logo" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@id/containerFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/footer"
+            android:name="com.lesinaja.les.ui.tutor.FooterTutorFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_footer_tutor" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/containerFooter"
+        android:layout_below="@+id/containerHeader"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:fillViewport="true"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Tata Tertib Tutor Bimbel LesinAja "
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:freezesText="false"
+                android:justificationMode="inter_word"
+                android:text="@string/rule_tutor"
+                android:textColor="@color/black" />
+        </LinearLayout>
+    </ScrollView>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_wa"
         android:name="com.lesinaja.les.ui.header.WhatsappFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/footer"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginBottom="85dp"
         tools:layout="@layout/fragment_whatsapp" />
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/footer"
-        android:name="com.lesinaja.les.ui.tutor.FooterTutorFragment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout="@layout/fragment_footer_tutor" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

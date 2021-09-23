@@ -15,6 +15,7 @@ import com.lesinaja.les.R
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.SiswaKey
+import com.lesinaja.les.ui.header.LoadingDialog
 
 data class SiswaAdapter(val mCtx : Context, val layoutResId : Int, val siswaList : List<SiswaKey>)
     : ArrayAdapter<SiswaKey>(mCtx, layoutResId, siswaList) {
@@ -71,11 +72,25 @@ data class SiswaAdapter(val mCtx : Context, val layoutResId : Int, val siswaList
                 updates["siswa/${siswa.id_siswa}"] = null
                 updates["jumlah_data/siswa"] = ServerValue.increment(-1)
                 updates["user/${Autentikasi.auth.currentUser?.uid}/roles/jumlah_siswa"] = ServerValue.increment(-1)
+
+                lateinit var isdialog: AlertDialog
+                val infalter = LayoutInflater.from(mCtx)
+                val dialogView = infalter.inflate(R.layout.dialog_loading,null)
+
+                val builder = AlertDialog.Builder(mCtx)
+                builder.setView(dialogView)
+                isdialog = builder.create()
+                isdialog.show()
+                isdialog.setCancelable(false)
+                isdialog.setCanceledOnTouchOutside(false)
+
                 Database.database.reference.updateChildren(updates)
                     .addOnSuccessListener {
+                        isdialog.dismiss()
                         Toast.makeText(mCtx, "berhasil hapus siswa", Toast.LENGTH_SHORT).show()
                     }
                     .addOnFailureListener {
+                        isdialog.dismiss()
                         Toast.makeText(mCtx, "gagal hapus siswa", Toast.LENGTH_SHORT).show()
                     }
             } else {

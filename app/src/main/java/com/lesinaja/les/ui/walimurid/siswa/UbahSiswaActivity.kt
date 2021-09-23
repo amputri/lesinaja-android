@@ -10,6 +10,7 @@ import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.controller.walimurid.akun.DataSiswaController
 import com.lesinaja.les.databinding.ActivityTambahSiswaBinding
+import com.lesinaja.les.ui.header.LoadingDialog
 import com.lesinaja.les.ui.header.ToolbarFragment
 
 class UbahSiswaActivity : AppCompatActivity() {
@@ -31,7 +32,7 @@ class UbahSiswaActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnKembali.setOnClickListener {
-            goToSiswa()
+            onBackPressed()
         }
         setToolbar("Ubah Data Siswa")
 
@@ -92,12 +93,18 @@ class UbahSiswaActivity : AppCompatActivity() {
         updates["siswa/${intent.getStringExtra(EXTRA_IDSISWA)}/id_jenjangkelas"] = id_jenjangkelas
         updates["siswa/${intent.getStringExtra(EXTRA_IDSISWA)}/nama"] = binding.etNamaSiswa.text.toString().trim()
         updates["siswa/${intent.getStringExtra(EXTRA_IDSISWA)}/sekolah"] = binding.etNamaSekolah.text.toString().trim()
+
+        val loading = LoadingDialog(this@UbahSiswaActivity)
+        loading.startLoading()
+
         Database.database.reference.updateChildren(updates)
             .addOnSuccessListener {
+                loading.isDismiss()
                 Toast.makeText(this, "berhasil ubah data siswa", Toast.LENGTH_SHORT).show()
                 goToSiswa()
             }
             .addOnFailureListener {
+                loading.isDismiss()
                 Toast.makeText(this, "gagal ubah data siswa", Toast.LENGTH_SHORT).show()
             }
     }

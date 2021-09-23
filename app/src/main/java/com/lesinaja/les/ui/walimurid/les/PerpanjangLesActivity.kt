@@ -15,6 +15,7 @@ import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.PerpanjangLes
 import com.lesinaja.les.databinding.ActivityPerpanjangLesBinding
+import com.lesinaja.les.ui.header.LoadingDialog
 import com.lesinaja.les.ui.header.ToolbarFragment
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -51,7 +52,7 @@ class PerpanjangLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetLis
         setContentView(binding.root)
 
         binding.btnKembali.setOnClickListener {
-            goToLes()
+            onBackPressed()
         }
         setToolbar("Perpanjang Les")
 
@@ -63,7 +64,13 @@ class PerpanjangLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetLis
         binding.tvLes.text = "${intent.getStringExtra(EXTRA_NAMALES)} (${intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN)}x)"
 
         binding.btnJadwal.setOnClickListener {
-            showCalendar()
+            if (listJadwal.size < intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN).toString().toInt())
+                showCalendar()
+        }
+
+        binding.btnResetJadwal.setOnClickListener {
+            listJadwal = arrayOf()
+            binding.tvJadwal.text = ""
         }
 
         binding.btnTambahLes.setOnClickListener {
@@ -185,12 +192,18 @@ class PerpanjangLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetLis
                                         for (i in 0 until listJadwal.size) {
                                             updates["les_siswa/${key}/waktu_mulai/${i}"] = listJadwal[i]
                                         }
+
+                                        val loading = LoadingDialog(this@PerpanjangLesActivity)
+                                        loading.startLoading()
+
                                         Database.database.reference.updateChildren(updates)
                                             .addOnSuccessListener {
+                                                loading.isDismiss()
                                                 Toast.makeText(this@PerpanjangLesActivity, "berhasil ambil les", Toast.LENGTH_SHORT).show()
                                                 goToLes()
                                             }
                                             .addOnFailureListener {
+                                                loading.isDismiss()
                                                 Toast.makeText(this@PerpanjangLesActivity, "gagal tambah jadwal les", Toast.LENGTH_SHORT).show()
                                             }
                                     }

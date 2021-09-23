@@ -32,7 +32,7 @@ class PresensiActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnKembali.setOnClickListener {
-            goToLes()
+            onBackPressed()
         }
         setToolbar("Presensi Les")
 
@@ -40,6 +40,7 @@ class PresensiActivity : AppCompatActivity() {
 
         updateUI()
 
+        binding.btnPerpanjangLes.setEnabled(false)
         binding.btnPerpanjangLes.setOnClickListener {
             goToPerpanjangLes()
         }
@@ -68,8 +69,12 @@ class PresensiActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     presensiList.clear()
+                    var jumlahLaporan = 0
+
                     for (h in snapshot.children) {
-                        val presensi = Database.database.getReference("les_presensi/${h.key}")
+                        var sudahLaporan = true
+
+                        val presensi = Database.database.getReference("les_presensi/${h.key}").orderByChild("waktu")
                         presensi.addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(snapshotPresensi: DataSnapshot) {
                                 if (snapshotPresensi.exists()) {
@@ -82,12 +87,25 @@ class PresensiActivity : AppCompatActivity() {
                                             binding.tvJumlahPertemuan.text.toString(),
                                             h.child("id_tutor").value.toString(),
                                             i.key!!,
-                                            i.child("waktu").value.toString().toLong()
+                                            i.child("waktu").value.toString().toLong(),
+                                            sudahLaporan
                                         )
+                                        if (i.child("sudah_laporan").value.toString() == "false") {
+                                            sudahLaporan = false
+                                        } else if (i.child("sudah_laporan").value.toString() == "true") {
+                                            sudahLaporan = true
+                                            jumlahLaporan += 1
+                                        }
+
+                                        if (jumlahLaporan == intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN).toString().toInt()) {
+                                            binding.btnPerpanjangLes.setEnabled(true)
+                                        }
+
                                         if (presensiObject != null) {
                                             presensiList.add(presensiObject)
                                         }
                                     }
+
                                     binding.lvPresensi.adapter = PresensiAdapter(this@PresensiActivity, R.layout.item_presensi, presensiList)
                                 }
                             }
@@ -98,13 +116,6 @@ class PresensiActivity : AppCompatActivity() {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
-    }
-
-    private fun goToLes() {
-        Intent(this, LesActivity::class.java).also {
-            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(it)
-        }
     }
 
     private fun goToPerpanjangLes() {

@@ -31,7 +31,7 @@ class GajiTutorActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnKembali.setOnClickListener {
-            goToLes()
+            onBackPressed()
         }
         setToolbar("Gaji Tutor")
 
@@ -73,12 +73,5 @@ class GajiTutorActivity : AppCompatActivity() {
             }
             override fun onCancelled(databaseError: DatabaseError) {}
         })
-    }
-
-    private fun goToLes() {
-        Intent(this, LesTutorActivity::class.java).also {
-            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(it)
-        }
     }
 }

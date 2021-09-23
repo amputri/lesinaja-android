@@ -13,6 +13,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.lesinaja.les.R
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
@@ -103,17 +104,24 @@ class AkunUmumActivity : AppCompatActivity(), View.OnClickListener {
                     if (role == "wali_murid") {
                         Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid!!}/login_terakhir").setValue("wali_murid")
                             .addOnSuccessListener {
-                                val profileWaliMurid = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/wali_murid")
-                                profileWaliMurid.addValueEventListener(object : ValueEventListener {
-                                    override fun onDataChange(dataSnapshotWaliMurid: DataSnapshot) {
-                                        if (dataSnapshotWaliMurid.getValue() != true) {
-                                            goToAkunWaliMurid()
-                                        } else {
-                                            goToBerandaWaliMurid()
-                                        }
+                                FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid!!}/token").setValue(task.result)
+                                            .addOnSuccessListener {
+                                                val profileWaliMurid = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/wali_murid")
+                                                profileWaliMurid.addValueEventListener(object : ValueEventListener {
+                                                    override fun onDataChange(dataSnapshotWaliMurid: DataSnapshot) {
+                                                        if (dataSnapshotWaliMurid.getValue() != true) {
+                                                            goToAkunWaliMurid()
+                                                        } else {
+                                                            goToBerandaWaliMurid()
+                                                        }
+                                                    }
+                                                    override fun onCancelled(databaseError: DatabaseError) {}
+                                                })
+                                            }
                                     }
-                                    override fun onCancelled(databaseError: DatabaseError) {}
-                                })
+                                }
                             }
                             .addOnFailureListener {
                                 Toast.makeText(this, "gagal masuk sebagai wali murid", Toast.LENGTH_SHORT).show()
@@ -121,17 +129,24 @@ class AkunUmumActivity : AppCompatActivity(), View.OnClickListener {
                     } else {
                         Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid!!}/login_terakhir").setValue("tutor")
                             .addOnSuccessListener {
-                                val profileTutor = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/tutor")
-                                profileTutor.addValueEventListener(object : ValueEventListener {
-                                    override fun onDataChange(dataSnapshotTutor: DataSnapshot) {
-                                        if (dataSnapshotTutor.getValue() != true) {
-                                            goToAkunTutor()
-                                        } else {
-                                            goToBerandaTutor()
-                                        }
+                                FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid!!}/token").setValue(task.result)
+                                            .addOnSuccessListener {
+                                                val profileTutor = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid}/roles/tutor")
+                                                profileTutor.addValueEventListener(object : ValueEventListener {
+                                                    override fun onDataChange(dataSnapshotTutor: DataSnapshot) {
+                                                        if (dataSnapshotTutor.getValue() != true) {
+                                                            goToAkunTutor()
+                                                        } else {
+                                                            goToBerandaTutor()
+                                                        }
+                                                    }
+                                                    override fun onCancelled(databaseError: DatabaseError) {}
+                                                })
+                                            }
                                     }
-                                    override fun onCancelled(databaseError: DatabaseError) {}
-                                })
+                                }
                             }
                             .addOnFailureListener {
                                 Toast.makeText(this, "gagal masuk sebagai tutor", Toast.LENGTH_SHORT).show()

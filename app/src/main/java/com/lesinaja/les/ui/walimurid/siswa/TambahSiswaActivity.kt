@@ -18,6 +18,7 @@ import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.walimurid.DataSiswa
 import com.lesinaja.les.controller.walimurid.akun.DataSiswaController
 import com.lesinaja.les.databinding.ActivityTambahSiswaBinding
+import com.lesinaja.les.ui.header.LoadingDialog
 import com.lesinaja.les.ui.header.ToolbarFragment
 
 class TambahSiswaActivity : AppCompatActivity() {
@@ -31,7 +32,7 @@ class TambahSiswaActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnKembali.setOnClickListener {
-            goToSiswa()
+            onBackPressed()
         }
         setToolbar("Tambah Siswa")
 
@@ -127,12 +128,18 @@ class TambahSiswaActivity : AppCompatActivity() {
         updates["siswa/${key}"] = dataSiswa
         updates["jumlah_data/siswa"] = ServerValue.increment(1)
         updates["user/${Autentikasi.auth.currentUser?.uid}/roles/jumlah_siswa"] = ServerValue.increment(1)
+
+        val loading = LoadingDialog(this@TambahSiswaActivity)
+        loading.startLoading()
+
         Database.database.reference.updateChildren(updates)
             .addOnSuccessListener {
+                loading.isDismiss()
                 Toast.makeText(this, "berhasil tambah siswa", Toast.LENGTH_SHORT).show()
                 goToSiswa()
             }
             .addOnFailureListener {
+                loading.isDismiss()
                 Toast.makeText(this, "gagal tambah siswa", Toast.LENGTH_SHORT).show()
             }
     }

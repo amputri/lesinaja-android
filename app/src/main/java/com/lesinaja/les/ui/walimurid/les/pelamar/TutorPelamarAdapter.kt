@@ -72,5 +72,4 @@ data class TutorPelamarAdapter(val mCtx : Context, val layoutResId : Int, val id
             mCtx.startActivity(it)
         }
     }
-
 }

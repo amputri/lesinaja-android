@@ -25,6 +25,8 @@ import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.umum.Kontak
 import com.lesinaja.les.controller.umum.WilayahController
 import com.lesinaja.les.databinding.ActivityAkunTutorBinding
+import com.lesinaja.les.ui.header.LoadingDialog
+import com.lesinaja.les.ui.tutor.beranda.BerandaTutorActivity
 import com.squareup.picasso.Picasso
 import java.io.ByteArrayOutputStream
 
@@ -205,6 +207,9 @@ class AkunTutorActivity : AppCompatActivity() {
     }
 
     private fun uploadImage(imageBitmap: Bitmap) {
+        val loading = LoadingDialog(this@AkunTutorActivity)
+        loading.startLoading()
+
         var imageBit = imageBitmap
 
         if ((imageBitmap.getHeight() * imageBitmap.getWidth() / 360000) > 1) {
@@ -232,10 +237,12 @@ class AkunTutorActivity : AppCompatActivity() {
                             }
                             Database.database.getReference("user_role/tutor/${Autentikasi.auth.currentUser?.uid}/link_foto").setValue(it.toString())
                                 .addOnSuccessListener {
+                                    loading.isDismiss()
                                     binding.btnUbahFoto.setEnabled(false)
                                     Toast.makeText(this, "berhasil ubah foto", Toast.LENGTH_SHORT).show()
                                 }
                                 .addOnFailureListener {
+                                    loading.isDismiss()
                                     Toast.makeText(this, "gagal ubah foto", Toast.LENGTH_SHORT).show()
                                 }
                         }
@@ -450,6 +457,9 @@ class AkunTutorActivity : AppCompatActivity() {
     }
 
     private fun updateProfile() {
+        val loading = LoadingDialog(this@AkunTutorActivity)
+        loading.startLoading()
+
         val kontak = Kontak(
             idDesa,
             binding.etAlamat.text.toString().trim(),
@@ -494,14 +504,28 @@ class AkunTutorActivity : AppCompatActivity() {
                         }
                         Database.database.reference.updateChildren(secondUpdates)
 
+                        loading.isDismiss()
                         Toast.makeText(this, "berhasil ubah data", Toast.LENGTH_SHORT).show()
                     }
                     .addOnFailureListener {
+                        loading.isDismiss()
                         Toast.makeText(this, "gagal ubah data user, coba lagi", Toast.LENGTH_SHORT).show()
                     }
             }
             .addOnFailureListener {
+                loading.isDismiss()
                 Toast.makeText(this, "gagal ubah data auth, coba lagi", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun goToBeranda() {
+        Intent(this, BerandaTutorActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(it)
+        }
+    }
+
+    override fun onBackPressed() {
+        goToBeranda()
     }
 }

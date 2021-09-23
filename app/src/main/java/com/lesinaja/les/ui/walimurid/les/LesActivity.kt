@@ -16,6 +16,7 @@ import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.walimurid.LesKey
 import com.lesinaja.les.databinding.ActivityLesBinding
+import com.lesinaja.les.ui.walimurid.beranda.BerandaWaliMuridActivity
 
 class LesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLesBinding
@@ -64,51 +65,24 @@ class LesActivity : AppCompatActivity() {
                     for (h in snapshot.children) {
                         var waktuMulai: Array<Long> = arrayOf()
 
-                        val gantiTutor = Database.database.getReference("les_gantitutor/${h.key}/waktu_mulai")
-                        gantiTutor.addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(snapshotGantiTutor: DataSnapshot) {
-                                if (snapshotGantiTutor.exists()) {
-                                    for (j in 0 until snapshotGantiTutor.childrenCount) {
-                                        waktuMulai = waktuMulai.plus(snapshotGantiTutor.child("${j}").value.toString().toLong())
-                                    }
+                        for (j in 0 until h.child("waktu_mulai").childrenCount) {
+                            waktuMulai = waktuMulai.plus(h.child("waktu_mulai/${j}").value.toString().toLong())
+                        }
 
-                                    val les = LesKey(
-                                        h.key!!,
-                                        h.child("gaji_tutor").value.toString().toInt(),
-                                        h.child("id_les").value.toString(),
-                                        h.child("id_siswa").value.toString(),
-                                        h.child("preferensi_tutor").value.toString(),
-                                        waktuMulai
-                                    )
-                                    if (les != null) {
-                                        lesList.add(les)
-                                    }
+                        val les = LesKey(
+                            h.key!!,
+                            h.child("gaji_tutor").value.toString().toInt(),
+                            h.child("id_les").value.toString(),
+                            h.child("id_siswa").value.toString(),
+                            h.child("preferensi_tutor").value.toString(),
+                            waktuMulai
+                        )
+                        if (les != null) {
+                            lesList.add(les)
+                        }
 
-                                    val adapter = LesAdapter(this@LesActivity, com.lesinaja.les.R.layout.item_les, lesList)
-                                    binding.lvLes.adapter = adapter
-                                } else {
-                                    for (j in 0 until h.child("waktu_mulai").childrenCount) {
-                                        waktuMulai = waktuMulai.plus(h.child("waktu_mulai/${j}").value.toString().toLong())
-                                    }
-
-                                    val les = LesKey(
-                                        h.key!!,
-                                        h.child("gaji_tutor").value.toString().toInt(),
-                                        h.child("id_les").value.toString(),
-                                        h.child("id_siswa").value.toString(),
-                                        h.child("preferensi_tutor").value.toString(),
-                                        waktuMulai
-                                    )
-                                    if (les != null) {
-                                        lesList.add(les)
-                                    }
-
-                                    val adapter = LesAdapter(this@LesActivity, com.lesinaja.les.R.layout.item_les, lesList)
-                                    binding.lvLes.adapter = adapter
-                                }
-                            }
-                            override fun onCancelled(error: DatabaseError) {}
-                        })
+                        val adapter = LesAdapter(this@LesActivity, com.lesinaja.les.R.layout.item_les, lesList)
+                        binding.lvLes.adapter = adapter
                     }
                 }
             }
@@ -147,5 +121,16 @@ class LesActivity : AppCompatActivity() {
                 setListView()
             }
         }
+    }
+
+    private fun goToBeranda() {
+        Intent(this, BerandaWaliMuridActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(it)
+        }
+    }
+
+    override fun onBackPressed() {
+        goToBeranda()
     }
 }

@@ -33,7 +33,7 @@ class PresensiTutorActivity : AppCompatActivity() {
         presensiList = mutableListOf()
 
         binding.btnKembali.setOnClickListener {
-            goToLes()
+            onBackPressed()
         }
         setToolbar("Presensi Les")
 
@@ -66,9 +66,11 @@ class PresensiTutorActivity : AppCompatActivity() {
                 if (snapshot.exists()) {
                     presensiList.clear()
                     for (h in snapshot.children) {
-                        val presensi = Database.database.getReference("les_presensi/${h.key}")
+                        val presensi = Database.database.getReference("les_presensi/${h.key}").orderByChild("waktu")
                         presensi.addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(snapshotPresensi: DataSnapshot) {
+                                var sudahLaporan = true
+
                                 for (i in snapshotPresensi.children) {
                                     val presensiObject = Presensi(
                                         h.key!!,
@@ -78,8 +80,15 @@ class PresensiTutorActivity : AppCompatActivity() {
                                         binding.tvJumlahPertemuan.text.toString(),
                                         h.child("id_tutor").value.toString(),
                                         i.key!!,
-                                        i.child("waktu").value.toString().toLong()
+                                        i.child("waktu").value.toString().toLong(),
+                                        sudahLaporan
                                     )
+                                    if (i.child("sudah_laporan").value.toString() == "false") {
+                                        sudahLaporan = false
+                                    } else if (i.child("sudah_laporan").value.toString() == "true") {
+                                        sudahLaporan = true
+                                    }
+
                                     if (presensiObject != null) {
                                         presensiList.add(presensiObject)
                                     }
@@ -93,12 +102,5 @@ class PresensiTutorActivity : AppCompatActivity() {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
-    }
-
-    private fun goToLes() {
-        Intent(this, LesTutorActivity::class.java).also {
-            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(it)
-        }
     }
 }

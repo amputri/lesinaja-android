@@ -1,24 +1,37 @@
 package com.lesinaja.les.ui.walimurid.les
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Bitmap
+import android.content.pm.PackageManager
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.pdf.PdfDocument
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
+import com.lesinaja.les.R
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.ActivityBayarLesBinding
+import com.lesinaja.les.ui.header.LoadingDialog
 import com.lesinaja.les.ui.header.ToolbarFragment
+import com.lesinaja.les.ui.tutor.lowongan.DetailLowonganActivity
 import com.squareup.picasso.Picasso
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,6 +40,10 @@ class BayarLesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBayarLesBinding
     private lateinit var imageBitmap: Bitmap
     private var keyPembayaran = ""
+
+    var logo: Bitmap? = null
+    var scaleBitmap: Bitmap? = null
+    var pageWidth = 1200
 
     companion object {
         const val EXTRA_IDLESSISWA = "id_les_siswa"
@@ -43,12 +60,16 @@ class BayarLesActivity : AppCompatActivity() {
         binding = ActivityBayarLesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.tvPdfTanggal.text = "tagihan belum dibayar"
+
         binding.btnKembali.setOnClickListener {
             goToLes()
         }
         setToolbar("Bayar Les")
 
         updateUI()
+        loadAlamat()
+        loadDataPribadiWaliMurid()
 
         binding.btnTambahLes.setEnabled(false)
 
@@ -70,6 +91,14 @@ class BayarLesActivity : AppCompatActivity() {
 
         binding.btnHapus.setOnClickListener {
             hapusLes()
+        }
+
+        binding.btnInvoice.setOnClickListener {
+            logo = BitmapFactory.decodeResource(resources, R.drawable.logoawal)
+            scaleBitmap = Bitmap.createScaledBitmap(logo!!, 390, 150, false)
+
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), PackageManager.PERMISSION_GRANTED)
+            createPDF()
         }
     }
 
@@ -161,8 +190,10 @@ class BayarLesActivity : AppCompatActivity() {
 
                         if (h.child("sudah_dikonfirmasi").value.toString() == "true") {
                             binding.textUnggah.text = "pembayaran sudah diverifikasi admin"
+                            binding.tvPdfTanggal.text = "tagihan sudah dibayar pada ${SimpleDateFormat("EEEE, dd MMMM yyyy hh:mm aaa").format(h.child("waktu_transfer").value.toString().toLong())}"
                             binding.btnHapus.setEnabled(false)
                         } else {
+                            binding.tvPdfTanggal.text = "pembayaran menunggu verifikasi admin"
                             binding.textUnggah.text = "pembayaran ${h.key} : belum dikonfirmasi admin, dapat diubah kembali"
                         }
 
@@ -278,6 +309,9 @@ class BayarLesActivity : AppCompatActivity() {
     }
 
     private fun uploadBuktiPembayaran(imageBitmap: Bitmap, keyLes: String) {
+        val loading = LoadingDialog(this@BayarLesActivity)
+        loading.startLoading()
+
         var imageBit = imageBitmap
 
         if ((imageBitmap.getHeight() * imageBitmap.getWidth() / 360000) > 1) {
@@ -325,10 +359,12 @@ class BayarLesActivity : AppCompatActivity() {
 
                             Database.database.reference.updateChildren(updates)
                                 .addOnSuccessListener {
+                                    loading.isDismiss()
                                     Toast.makeText(this, "berhasil unggah pembayaran", Toast.LENGTH_SHORT).show()
                                     goToLes()
                                 }
                                 .addOnFailureListener {
+                                    loading.isDismiss()
                                     Toast.makeText(this, "gagal unggah pembayaran", Toast.LENGTH_SHORT).show()
                                     goToLes()
                                 }
@@ -353,11 +389,16 @@ class BayarLesActivity : AppCompatActivity() {
                     delete["pembayaran/${binding.textUnggah.text.toString().substringBefore(" :").substringAfter("pembayaran ")}"] = null
                     delete["jumlah_data/pembayaran"] = ServerValue.increment(-1)
                 }
+
+                val loading = LoadingDialog(this@BayarLesActivity)
+                loading.startLoading()
+
                 Database.database.reference.updateChildren(delete)
                     .addOnSuccessListener {
                         if (keyPembayaran == "dapat diubah kembali") {
                             FirebaseStorage.getInstance().reference.child("bukti_bayar/${intent.getStringExtra(EXTRA_IDLESSISWA)}").delete()
                         }
+                        loading.isDismiss()
                         Toast.makeText(applicationContext, "data berhasil dihapus", Toast.LENGTH_SHORT).show()
                         goToLes()
                     }
@@ -374,5 +415,165 @@ class BayarLesActivity : AppCompatActivity() {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
             startActivity(it)
         }
+    }
+
+    private fun loadAlamat() {
+        val waliMurid = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid!!}/kontak")
+        waliMurid.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshotWaliMurid: DataSnapshot) {
+                if (dataSnapshotWaliMurid.exists()) {
+                    var idDesa = dataSnapshotWaliMurid.child("id_desa").value.toString()
+                    var idKecamatan = dataSnapshotWaliMurid.child("id_desa").value.toString().substring(0,7)
+                    var idKabupaten = dataSnapshotWaliMurid.child("id_desa").value.toString().substring(0,4)
+                    var idProvinsi = dataSnapshotWaliMurid.child("id_desa").value.toString().substring(0,2)
+
+                    val desa = Database.database.getReference("wilayah_desa/${idProvinsi}/${idKabupaten}/${idKecamatan}/${idDesa}/nama")
+                    desa.addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshotDesa: DataSnapshot) {
+                            if (dataSnapshotDesa.exists()) {
+                                val kecamatan = Database.database.getReference("wilayah_kecamatan/${idProvinsi}/${idKabupaten}/${idKecamatan}/nama")
+                                kecamatan.addValueEventListener(object : ValueEventListener {
+                                    override fun onDataChange(dataSnapshotKecamatan: DataSnapshot) {
+                                        if (dataSnapshotKecamatan.exists()) {
+                                            val kabupaten = Database.database.getReference("wilayah_kabupaten/${idProvinsi}/${idKabupaten}/nama")
+                                            kabupaten.addValueEventListener(object : ValueEventListener {
+                                                override fun onDataChange(dataSnapshotKabupaten: DataSnapshot) {
+                                                    if (dataSnapshotKabupaten.exists()) {
+                                                        val provinsi = Database.database.getReference("wilayah_provinsi/${idProvinsi}/nama")
+                                                        provinsi.addValueEventListener(object : ValueEventListener {
+                                                            override fun onDataChange(dataSnapshotProvinsi: DataSnapshot) {
+                                                                if (dataSnapshotProvinsi.exists()) {
+                                                                    binding.tvPdfAlamat.text = "${dataSnapshotWaliMurid.child("alamat_rumah").value}"
+                                                                    binding.tvPdfKecamatan.text = "${dataSnapshotDesa.value}, ${dataSnapshotKecamatan.value}"
+                                                                    binding.tvPdfKabupaten.text = "${dataSnapshotKabupaten.value}, ${dataSnapshotProvinsi.value}"
+                                                                    binding.tvPdfTelepon.text = "${dataSnapshotWaliMurid.child("telepon").value}"
+                                                                }
+                                                            }
+                                                            override fun onCancelled(error: DatabaseError) {}
+                                                        })
+                                                    }
+                                                }
+                                                override fun onCancelled(error: DatabaseError) {}
+                                            })
+                                        }
+                                    }
+                                    override fun onCancelled(error: DatabaseError) {}
+                                })
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {}
+                    })
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun loadDataPribadiWaliMurid() {
+        val nama = Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid!!}/nama")
+        nama.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshotNama: DataSnapshot) {
+                if (dataSnapshotNama.exists()) {
+                    binding.tvPdfWalmur.text = dataSnapshotNama.value.toString()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    @SuppressLint("NewApi")
+    private fun createPDF() {
+        val pdfDocument = PdfDocument()
+        val paint = Paint()
+        val titlePaint = Paint()
+        val pageInfo = PdfDocument.PageInfo.Builder(1200, 2010, 1).create()
+        val page = pdfDocument.startPage(pageInfo)
+        val canvas = page.canvas
+        canvas.drawBitmap(scaleBitmap!!, 400f, 30f, paint)
+        paint.color = Color.BLACK
+        paint.textSize = 30f
+        paint.textAlign = Paint.Align.RIGHT
+        titlePaint.textAlign = Paint.Align.CENTER
+        titlePaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        titlePaint.color = Color.BLACK
+        titlePaint.textSize = 50f
+        canvas.drawText("${intent.getStringExtra(EXTRA_IDLESSISWA)}", (pageWidth / 2).toFloat(), 250f, titlePaint)
+        titlePaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        titlePaint.textSize = 35f
+        canvas.drawText("${binding.tvPdfTanggal.text}", (pageWidth / 2).toFloat(), 310f, titlePaint)
+
+        paint.textAlign = Paint.Align.RIGHT
+        canvas.drawText("Bimbel : LesinAja", (pageWidth - 97).toFloat(), 430f, paint)
+        canvas.drawText("081242306969", (pageWidth - 97).toFloat(), 470f, paint)
+        canvas.drawText("Perum. Graha Kuncara L 22", (pageWidth - 97).toFloat(), 512f, paint)
+        canvas.drawText("Kemiri - Sidoarjo - Jawa Timur" + "", (pageWidth - 97).toFloat(), 562f, paint)
+
+        paint.textAlign = Paint.Align.LEFT
+        canvas.drawText("Wali Murid : " + "${binding.tvPdfWalmur.text}", 20f, 430f, paint)
+        canvas.drawText("Siswa : " + "${intent.getStringExtra(EXTRA_NAMASISWA)}", 20f, 470f, paint)
+        canvas.drawText("${binding.tvPdfTelepon.text}", 20f, 512f, paint)
+        canvas.drawText("${binding.tvPdfAlamat.text}", 20f, 562f, paint)
+        canvas.drawText("${binding.tvPdfKecamatan.text}", 20f, 612f, paint)
+        canvas.drawText("${binding.tvPdfKabupaten.text}", 20f, 662f, paint)
+
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 2f
+        canvas.drawRect(20f, 780f, (pageWidth - 20).toFloat(), 860f, paint)
+        paint.textAlign = Paint.Align.LEFT
+        paint.style = Paint.Style.FILL
+        canvas.drawText("No.", 40f, 830f, paint)
+        canvas.drawText("Pembayaran", 200f, 830f, paint)
+        canvas.drawText("Jumlah Pertemuan", 500f, 830f, paint)
+        canvas.drawText("Harga", 900f, 830f, paint)
+        canvas.drawLine(180f, 790f, 180f, 840f, paint)
+        canvas.drawLine(480f, 790f, 480f, 840f, paint)
+        canvas.drawLine(880f, 790f, 880f, 840f, paint)
+
+        canvas.drawText("1.", 40f, 950f, paint)
+        canvas.drawText("Pendaftaran Les", 200f, 950f, paint)
+        canvas.drawText("", 700f, 950f, paint)
+        paint.textAlign = Paint.Align.RIGHT
+        canvas.drawText("${binding.tvBiayaDaftarRupiah.text}", (pageWidth - 40).toFloat(), 950f, paint)
+        paint.textAlign = Paint.Align.LEFT
+
+        canvas.drawText("2.", 40f, 1050f, paint)
+        canvas.drawText("Les ${intent.getStringExtra(EXTRA_NAMALES)}", 200f, 1050f, paint)
+        canvas.drawText("${intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN)}", 700f, 1050f, paint)
+        paint.textAlign = Paint.Align.RIGHT
+        canvas.drawText("${binding.tvBiayaLesRupiah.text}", (pageWidth - 40).toFloat(), 1050f, paint)
+        paint.textAlign = Paint.Align.LEFT
+
+        paint.textAlign = Paint.Align.LEFT
+        paint.color = Color.rgb(249,174,48)
+        canvas.drawRect(680f, 1150f, (pageWidth - 20).toFloat(), 1250f, paint)
+        paint.color = Color.BLACK
+        paint.textSize = 50f
+        paint.textAlign = Paint.Align.LEFT
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        canvas.drawText("Total", 700f, 1210f, paint)
+        paint.textAlign = Paint.Align.RIGHT
+        canvas.drawText("${binding.tvTotal.text}", (pageWidth - 40).toFloat(), 1210f, paint)
+
+        pdfDocument.finishPage(page)
+
+        val file = File(Environment.getExternalStorageDirectory(), "/LesinAja-${intent.getStringExtra(EXTRA_IDLESSISWA)}.pdf")
+        try {
+            pdfDocument.writeTo(FileOutputStream(file))
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        pdfDocument.close()
+        Toast.makeText(this@BayarLesActivity, "PDF sudah dibuat", Toast.LENGTH_LONG).show()
+
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(
+            FileProvider.getUriForFile(
+                this@BayarLesActivity,
+                this@BayarLesActivity.applicationContext.packageName + ".provider",
+                file
+            ), "application/pdf"
+        )
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(intent)
     }
 }

@@ -4,14 +4,24 @@ import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.google.gson.Gson
 import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
+import com.lesinaja.les.base.notifikasi.NotificationData
+import com.lesinaja.les.base.notifikasi.PushNotification
+import com.lesinaja.les.base.notifikasi.RetrofitInstance
 import com.lesinaja.les.databinding.ActivityDetailLowonganBinding
+import com.lesinaja.les.ui.header.LoadingDialog
 import com.lesinaja.les.ui.header.ToolbarFragment
+import com.lesinaja.les.ui.walimurid.les.pelamar.DetailTutorPelamarActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,6 +41,8 @@ class DetailLowonganActivity : AppCompatActivity() {
         const val EXTRA_TANGGALMULAI = "waktu_mulai"
     }
 
+    val TAG = "DetailLowonganActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailLowonganBinding.inflate(layoutInflater)
@@ -38,7 +50,7 @@ class DetailLowonganActivity : AppCompatActivity() {
         setContentView(view)
 
         binding.btnKembali.setOnClickListener {
-            goToLowongan()
+            onBackPressed()
         }
         setToolbar("Detail Lowongan")
 
@@ -209,11 +221,17 @@ class DetailLowonganActivity : AppCompatActivity() {
             val builder = AlertDialog.Builder(this)
             builder.setMessage("yakin ingin ambil lowongan?")
             builder.setPositiveButton("Ambil") { p0,p1 ->
+                val loading = LoadingDialog(this@DetailLowonganActivity)
+                loading.startLoading()
+
                 Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/id_tutorpelamar/${binding.tvStatus.text.toString().substringAfter("_")}").setValue(Autentikasi.auth.currentUser?.uid)
                     .addOnSuccessListener {
+                        loading.isDismiss()
+                        pushNotifikasi()
                         Toast.makeText(applicationContext, "berhasil ambil lowongan", Toast.LENGTH_SHORT).show()
                     }
                     .addOnFailureListener {
+                        loading.isDismiss()
                         Toast.makeText(applicationContext, "gagal ambil lowongan", Toast.LENGTH_SHORT).show()
                     }
                 goToLowongan()
@@ -227,6 +245,44 @@ class DetailLowonganActivity : AppCompatActivity() {
         Intent(this, LowonganActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
             startActivity(it)
+        }
+    }
+
+    private fun pushNotifikasi() {
+        val siswa = Database.database.getReference("siswa/${intent.getStringExtra(EXTRA_IDSISWA)}/id_walimurid")
+        siswa.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshotSiswa: DataSnapshot) {
+                if (dataSnapshotSiswa.exists()) {
+                    val waliMurid = Database.database.getReference("user/${dataSnapshotSiswa.value}/token")
+                    waliMurid.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshotWaliMurid: DataSnapshot) {
+                            if (dataSnapshotWaliMurid.exists()) {
+                                PushNotification(
+                                    NotificationData("Ada Tutor Pelamar Baru", "Lihat dan pilih tutor les ${intent.getStringExtra(EXTRA_NAMALES)} ${intent.getStringExtra(EXTRA_NAMASISWA)}"),
+                                    dataSnapshotWaliMurid.value.toString()
+                                ).also {
+                                    sendNotification(it)
+                                }
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {}
+                    })
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d(TAG, "Response: ${Gson().toJson(response)}")
+            } else {
+                Log.e(TAG, response.errorBody().toString())
+            }
+        } catch(e: Exception) {
+            Log.e(TAG, e.toString())
         }
     }
 }

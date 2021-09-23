@@ -1,5 +1,6 @@
 package com.lesinaja.les.ui.walimurid.akun
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -19,6 +20,9 @@ import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.walimurid.DataWaliMurid
 import com.lesinaja.les.controller.umum.WilayahController
 import com.lesinaja.les.databinding.ActivityAkunWaliMuridBinding
+import com.lesinaja.les.ui.header.LoadingDialog
+import com.lesinaja.les.ui.tutor.beranda.BerandaTutorActivity
+import com.lesinaja.les.ui.walimurid.beranda.BerandaWaliMuridActivity
 
 class AkunWaliMuridActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAkunWaliMuridBinding
@@ -108,6 +112,9 @@ class AkunWaliMuridActivity : AppCompatActivity() {
     }
 
     private fun updateProfile() {
+        val loading = LoadingDialog(this@AkunWaliMuridActivity)
+        loading.startLoading()
+
         val kontak = Kontak(idDesa,
                         binding.etAlamat.text.toString().trim(),
                         binding.etTelepon.text.toString().trim())
@@ -139,13 +146,16 @@ class AkunWaliMuridActivity : AppCompatActivity() {
 
                 Database.database.reference.updateChildren(updates)
                     .addOnSuccessListener {
+                        loading.isDismiss()
                         Toast.makeText(this, "berhasil ubah data", Toast.LENGTH_SHORT).show()
                     }
                     .addOnFailureListener {
+                        loading.isDismiss()
                         Toast.makeText(this, "gagal ubah data user, coba lagi", Toast.LENGTH_SHORT).show()
                     }
             }
             .addOnFailureListener {
+                loading.isDismiss()
                 Toast.makeText(this, "gagal ubah data auth, coba lagi", Toast.LENGTH_SHORT).show()
             }
     }
@@ -256,5 +266,16 @@ class AkunWaliMuridActivity : AppCompatActivity() {
                 idDesa = selectedObject.id
             }
         }
+    }
+
+    private fun goToBeranda() {
+        Intent(this, BerandaWaliMuridActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(it)
+        }
+    }
+
+    override fun onBackPressed() {
+        goToBeranda()
     }
 }

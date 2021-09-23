@@ -3,13 +3,23 @@ package com.lesinaja.les.ui.tutor.les.presensi
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.google.gson.Gson
 import com.lesinaja.les.base.Database
+import com.lesinaja.les.base.notifikasi.NotificationData
+import com.lesinaja.les.base.notifikasi.PushNotification
+import com.lesinaja.les.base.notifikasi.RetrofitInstance
 import com.lesinaja.les.databinding.ActivityLaporanTutorBinding
+import com.lesinaja.les.ui.header.LoadingDialog
 import com.lesinaja.les.ui.header.ToolbarFragment
+import com.lesinaja.les.ui.walimurid.les.presensi.LaporanActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.HashMap
 
 class LaporanTutorActivity : AppCompatActivity() {
@@ -27,13 +37,15 @@ class LaporanTutorActivity : AppCompatActivity() {
         const val EXTRA_NAMATUTOR = "nama_tutor"
     }
 
+    val TAG = "LTAActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLaporanTutorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.btnKembali.setOnClickListener {
-            goToPresensi()
+            onBackPressed()
         }
         setToolbar("Laporan Les")
 
@@ -87,12 +99,19 @@ class LaporanTutorActivity : AppCompatActivity() {
             val updates: MutableMap<String, Any> = HashMap()
             updates["les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/materi"] = binding.tvMateri.text.toString().trim()
             updates["les_laporan/${intent.getStringExtra(EXTRA_IDLESSISWATUTOR)}/${intent.getStringExtra(EXTRA_IDPRESENSI)}/laporan_tutor"] = binding.tvLaporanTutor.text.toString().trim()
+
+            val loading = LoadingDialog(this@LaporanTutorActivity)
+            loading.startLoading()
+
             Database.database.reference.updateChildren(updates)
                 .addOnSuccessListener {
+                    loading.isDismiss()
+                    pushNotifikasi()
                     Toast.makeText(this, "berhasil input laporan", Toast.LENGTH_SHORT).show()
                     goToPresensi()
                 }
                 .addOnFailureListener {
+                    loading.isDismiss()
                     Toast.makeText(this, "gagal input laporan", Toast.LENGTH_SHORT).show()
                 }
         } else {
@@ -108,6 +127,52 @@ class LaporanTutorActivity : AppCompatActivity() {
             it.putExtra(PresensiTutorActivity.EXTRA_NAMALES, intent.getStringExtra(EXTRA_NAMALES).toString().substringAfter("Les: "))
             it.putExtra(PresensiTutorActivity.EXTRA_JUMLAHPERTEMUAN, intent.getStringExtra(EXTRA_JUMLAHPERTEMUAN).toString().substringAfter("Jumlah Pertemuan: "))
             startActivity(it)
+        }
+    }
+
+    private fun pushNotifikasi() {
+        val siswa = Database.database.getReference("les_siswa/${intent.getStringExtra(EXTRA_IDLESSISWA)}/id_siswa")
+        siswa.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshotSiswa: DataSnapshot) {
+                if (dataSnapshotSiswa.exists()) {
+                    val walmur = Database.database.getReference("siswa/${dataSnapshotSiswa.value}/id_walimurid")
+                    walmur.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshotWalmur: DataSnapshot) {
+                            if (dataSnapshotWalmur.exists()) {
+                                val token = Database.database.getReference("user/${dataSnapshotWalmur.value}/token")
+                                token.addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(dataSnapshotToken: DataSnapshot) {
+                                        if (dataSnapshotToken.exists()) {
+                                            PushNotification(
+                                                NotificationData("Lihat Laporan Tutor", "${intent.getStringExtra(EXTRA_NAMALES)} ${intent.getStringExtra(EXTRA_NAMASISWA)} ${binding.tvPertemuan.text}"),
+                                                dataSnapshotToken.value.toString()
+                                            ).also {
+                                                sendNotification(it)
+                                            }
+                                        }
+                                    }
+                                    override fun onCancelled(error: DatabaseError) {}
+                                })
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {}
+                    })
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d(TAG, "Response: ${Gson().toJson(response)}")
+            } else {
+                Log.e(TAG, response.errorBody().toString())
+            }
+        } catch(e: Exception) {
+            Log.e(TAG, e.toString())
         }
     }
 }

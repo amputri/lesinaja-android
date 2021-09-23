@@ -32,7 +32,7 @@ class TutorPelamarActivity : AppCompatActivity() {
         idPelamarList = mutableListOf()
 
         binding.btnKembali.setOnClickListener {
-            goToLes()
+            onBackPressed()
         }
         setToolbar("Daftar Tutor Pelamar")
 
@@ -80,12 +80,5 @@ class TutorPelamarActivity : AppCompatActivity() {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
-    }
-
-    private fun goToLes() {
-        Intent(this, LesActivity::class.java).also {
-            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(it)
-        }
     }
 }

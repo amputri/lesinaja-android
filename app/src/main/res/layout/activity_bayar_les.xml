@@ -82,6 +82,37 @@
             android:padding="16dp">
 
             <TextView
+                android:id="@+id/tvPdfTanggal"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="TextView" />
+            <TextView
+                android:id="@+id/tvPdfWalmur"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="TextView" />
+            <TextView
+                android:id="@+id/tvPdfTelepon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="TextView" />
+            <TextView
+                android:id="@+id/tvPdfAlamat"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="TextView" />
+            <TextView
+                android:id="@+id/tvPdfKecamatan"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="TextView" />
+            <TextView
+                android:id="@+id/tvPdfKabupaten"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="TextView" />
+
+            <TextView
                 android:id="@+id/textSiswa"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -228,6 +259,20 @@
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toEndOf="@+id/textViewJadwal"
                         app:layout_constraintTop_toBottomOf="@+id/tvBiayaLesRupiah" />
+
+                    <Button
+                        android:id="@+id/btnInvoice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:backgroundTint="@color/orange"
+                        android:text="Cetak Invoice"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textViewJadwal" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>

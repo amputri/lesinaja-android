@@ -202,6 +202,7 @@
                     android:id="@+id/ivKalender"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    app:tint="@color/orange"
                     app:layout_constraintBottom_toBottomOf="@+id/tvJadwalBaru"
                     app:layout_constraintStart_toStartOf="@+id/jadwalRescheduleHeader"
                     app:layout_constraintTop_toTopOf="@+id/tvJadwalBaru"

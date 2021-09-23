@@ -8,6 +8,7 @@ data class Presensi(
     var jumlah_pertemuan: String,
     var id_tutor: String,
     var id_presensi: String,
-    var waktu: Long
+    var waktu: Long,
+    var sudah_laporan: Boolean
 )
 

@@ -39,7 +39,7 @@ class DetailLesActivity : AppCompatActivity() {
         setContentView(view)
 
         binding.btnKembali.setOnClickListener {
-            goToLes()
+            onBackPressed()
         }
         setToolbar("Detail Les")
 
@@ -168,12 +168,5 @@ class DetailLesActivity : AppCompatActivity() {
             }
             override fun onCancelled(databaseError: DatabaseError) {}
         })
-    }
-
-    private fun goToLes() {
-        Intent(this, LesTutorActivity::class.java).also {
-            it.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(it)
-        }
     }
 }

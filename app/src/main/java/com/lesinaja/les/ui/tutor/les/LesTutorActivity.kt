@@ -1,5 +1,6 @@
 package com.lesinaja.les.ui.tutor.les
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.firebase.database.DataSnapshot
@@ -10,6 +11,7 @@ import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.tutor.LesGaji
 import com.lesinaja.les.databinding.ActivityLesTutorBinding
+import com.lesinaja.les.ui.tutor.beranda.BerandaTutorActivity
 
 class LesTutorActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLesTutorBinding
@@ -63,5 +65,16 @@ class LesTutorActivity : AppCompatActivity() {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun goToBeranda() {
+        Intent(this, BerandaTutorActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(it)
+        }
+    }
+
+    override fun onBackPressed() {
+        goToBeranda()
     }
 }

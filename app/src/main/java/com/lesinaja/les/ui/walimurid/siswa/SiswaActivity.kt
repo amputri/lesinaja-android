@@ -11,6 +11,7 @@ import com.lesinaja.les.base.Autentikasi
 import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.walimurid.SiswaKey
 import com.lesinaja.les.databinding.ActivitySiswaBinding
+import com.lesinaja.les.ui.walimurid.beranda.BerandaWaliMuridActivity
 
 class SiswaActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySiswaBinding
@@ -61,5 +62,16 @@ class SiswaActivity : AppCompatActivity() {
 
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun goToBeranda() {
+        Intent(this, BerandaWaliMuridActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(it)
+        }
+    }
+
+    override fun onBackPressed() {
+        goToBeranda()
     }
 }

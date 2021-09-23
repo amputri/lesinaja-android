@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import com.lesinaja.les.R
 import com.lesinaja.les.base.walimurid.presensi.Presensi
 import java.text.SimpleDateFormat
@@ -25,14 +26,18 @@ data class PresensiTutorAdapter(val mCtx : Context, val layoutResId : Int, val p
         view.findViewById<TextView>(R.id.tvJam).text = "Jam "+SimpleDateFormat("hh:mm aaa").format(presensi.waktu)
 
         view.findViewById<TextView>(R.id.tvTutor).text = "Pertemuan ke-"+(position+1)
-
+        
         view.findViewById<TextView>(R.id.btnLaporan).setOnClickListener {
-            goToLaporan(
-                presensi,
-                view.findViewById<TextView>(R.id.tvTanggal).text.toString(),
-                view.findViewById<TextView>(R.id.tvJam).text.toString(),
-                view.findViewById<TextView>(R.id.tvTutor).text.toString()
-            )
+            if (presensi.sudah_laporan) {
+                goToLaporan(
+                    presensi,
+                    view.findViewById<TextView>(R.id.tvTanggal).text.toString(),
+                    view.findViewById<TextView>(R.id.tvJam).text.toString(),
+                    view.findViewById<TextView>(R.id.tvTutor).text.toString()
+                )
+            } else {
+                Toast.makeText(mCtx, "belum ada laporan les sebelumnya", Toast.LENGTH_SHORT).show()
+            }
         }
 
         view.findViewById<TextView>(R.id.btnUbahJadwal).setOnClickListener {

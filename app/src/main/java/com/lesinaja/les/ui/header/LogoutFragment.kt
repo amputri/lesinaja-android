@@ -11,6 +11,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.lesinaja.les.base.Autentikasi
+import com.lesinaja.les.base.Database
 import com.lesinaja.les.databinding.FragmentLogoutBinding
 import com.lesinaja.les.ui.umum.akun.AkunUmumActivity
 
@@ -49,6 +50,7 @@ class LogoutFragment : Fragment() {
         val builder = AlertDialog.Builder(activity)
         builder.setMessage("yakin ingin keluar ?")
         builder.setPositiveButton("Yakin") { p0,p1 ->
+            Database.database.getReference("user/${Autentikasi.auth.currentUser?.uid!!}/token").removeValue()
             Autentikasi.auth.signOut()
 
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()

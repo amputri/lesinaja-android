@@ -18,6 +18,7 @@ import com.lesinaja.les.base.Database
 import com.lesinaja.les.base.umum.Wilayah
 import com.lesinaja.les.base.walimurid.DataLes
 import com.lesinaja.les.databinding.ActivityTambahLesBinding
+import com.lesinaja.les.ui.header.LoadingDialog
 import com.lesinaja.les.ui.header.ToolbarFragment
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -34,6 +35,7 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
     var biayaDaftar = 0
     var biayaLes = 0
     var total = 0
+    var jumlahPertemuan = 0
 
     var day = 0
     var month: Int = 0
@@ -61,7 +63,7 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
         setContentView(binding.root)
 
         binding.btnKembali.setOnClickListener {
-            goToLes()
+            onBackPressed()
         }
         setToolbar("Tambah Les")
 
@@ -74,7 +76,13 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
         setLesAdapter()
 
         binding.btnJadwal.setOnClickListener {
-            showCalendar()
+            if (listJadwal.size < jumlahPertemuan && jumlahPertemuan > 0)
+                showCalendar()
+        }
+
+        binding.btnResetJadwal.setOnClickListener {
+            listJadwal = arrayOf()
+            binding.tvJadwal.text = ""
         }
 
         binding.btnTambahLes.setOnClickListener {
@@ -186,6 +194,10 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
                 gajiTutor = selectedObject.id.substringAfter("**").substringBefore("#").toInt()
                 idKabupaten =  selectedObject.id.substringAfter("#")
 
+                if (selectedObject.nama != "pilih les") {
+                    jumlahPertemuan = selectedObject.nama.substringAfter("(").substringBefore("x)").toInt()
+                }
+
                 if (binding.tvBiayaDaftar.text.toString() != "-") {
                     biayaDaftar = binding.tvBiayaDaftar.text.toString().toInt()
                 }
@@ -256,6 +268,10 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
             binding.tvBiayaLes.text.toString().toInt(),
             false
         )
+
+        val loading = LoadingDialog(this@TambahLesActivity)
+        loading.startLoading()
+
         val key = Database.database.getReference("les_siswa").push().key!!
         Database.database.getReference("les_siswa/${key}").setValue(dataLes)
             .addOnSuccessListener {
@@ -265,16 +281,20 @@ class TambahLesActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListene
                 for (i in 0 until listJadwal.size) {
                     updates["les_siswa/${key}/waktu_mulai/${i}"] = listJadwal[i]
                 }
+
                 Database.database.reference.updateChildren(updates)
                     .addOnSuccessListener {
+                        loading.isDismiss()
                         Toast.makeText(this, "berhasil ambil les", Toast.LENGTH_SHORT).show()
                         goToLes()
                     }
                     .addOnFailureListener {
+                        loading.isDismiss()
                         Toast.makeText(this, "gagal tambah jadwal les", Toast.LENGTH_SHORT).show()
                     }
             }
             .addOnFailureListener {
+                loading.isDismiss()
                 Toast.makeText(this, "gagal ambil les", Toast.LENGTH_SHORT).show()
             }
     }

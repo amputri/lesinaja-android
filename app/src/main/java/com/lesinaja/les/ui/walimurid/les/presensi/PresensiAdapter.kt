@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -39,12 +40,16 @@ data class PresensiAdapter(val mCtx : Context, val layoutResId : Int, val presen
         })
 
         view.findViewById<TextView>(R.id.btnLaporan).setOnClickListener {
-            goToLaporan(
-                presensi,
-                view.findViewById<TextView>(R.id.tvTanggal).text.toString(),
-                view.findViewById<TextView>(R.id.tvJam).text.toString(),
-                view.findViewById<TextView>(R.id.tvTutor).text.toString()
-            )
+            if (presensi.sudah_laporan) {
+                goToLaporan(
+                    presensi,
+                    view.findViewById<TextView>(R.id.tvTanggal).text.toString(),
+                    view.findViewById<TextView>(R.id.tvJam).text.toString(),
+                    view.findViewById<TextView>(R.id.tvTutor).text.toString()
+                )
+            } else {
+                Toast.makeText(mCtx, "belum ada laporan les sebelumnya", Toast.LENGTH_SHORT).show()
+            }
         }
 
         view.findViewById<TextView>(R.id.btnUbahJadwal).setOnClickListener {

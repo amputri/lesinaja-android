@@ -68,6 +68,7 @@
                     android:backgroundTint="@color/orange"
                     android:text="Simpan Foto Profil"
                     android:textAllCaps="false"
+                    android:enabled="false"
                     app:layout_gravity="fill_horizontal|center_vertical" />
 
             </androidx.gridlayout.widget.GridLayout>

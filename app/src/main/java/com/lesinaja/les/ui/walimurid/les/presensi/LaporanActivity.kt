@@ -85,6 +85,7 @@ class LaporanActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     if (dataSnapshot.child("komentar_walimurid").exists()) {
+                        binding.btnKirimLaporan.text = "Simpan Perubahan"
                         binding.etLaporanWaliMurid.setText(dataSnapshot.child("komentar_walimurid").value.toString())
                         binding.ratingTutor.rating = dataSnapshot.child("rating_tutor").value.toString().toFloat()
                     }
@@ -119,7 +120,7 @@ class LaporanActivity : AppCompatActivity() {
                                         override fun onDataChange(dataSnapshotJumlahPertemuan: DataSnapshot) {
                                             val updates: MutableMap<String, Any> = HashMap()
 
-                                            if (binding.tvJumlahPertemuan.text.toString().substringAfter("Jumlah Pertemuan: ") == binding.tvPertemuan.text.toString().substringAfter("Pertemuan ke-")) {
+                                            if (binding.tvJumlahPertemuan.text.toString().substringAfter("Jumlah Pertemuan: ") == binding.tvPertemuan.text.toString().substringAfter("Pertemuan ke-") && binding.btnKirimLaporan.text.toString() != "Simpan Perubahan") {
                                                 val keyPembayaran = Database.database.getReference("pembayaran").push().key!!
                                                 updates["jumlah_data/pembayaran"] = ServerValue.increment(1)
                                                 updates["pembayaran/${keyPembayaran}/idlessiswa"] = intent.getStringExtra(EXTRA_IDLESSISWA).toString()
@@ -181,7 +182,7 @@ class LaporanActivity : AppCompatActivity() {
                         override fun onDataChange(dataSnapshotToken: DataSnapshot) {
                             if (dataSnapshotToken.exists()) {
                                 PushNotification(
-                                    NotificationData("Lihat Komentar Wali Murid", "${intent.getStringExtra(EXTRA_NAMALES)} ${intent.getStringExtra(EXTRA_NAMASISWA)} ${binding.tvPertemuan.text}"),
+                                    NotificationData("Lihat Komentar Wali Murid", "Les ${intent.getStringExtra(EXTRA_NAMALES).toString().substringAfter("Les: ")} ${intent.getStringExtra(EXTRA_NAMASISWA).toString().substringAfter("Siswa: ")} ${binding.tvPertemuan.text.toString().substringAfter("Pertemuan ")}"),
                                     dataSnapshotToken.value.toString()
                                 ).also {
                                     sendNotification(it)

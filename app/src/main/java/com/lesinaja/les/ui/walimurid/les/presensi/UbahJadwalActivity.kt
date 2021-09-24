@@ -170,7 +170,7 @@ class UbahJadwalActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
                         override fun onDataChange(dataSnapshotToken: DataSnapshot) {
                             if (dataSnapshotToken.exists()) {
                                 PushNotification(
-                                    NotificationData("Wali Murid mengubah Jadwal Les", "${intent.getStringExtra(EXTRA_NAMALES)} ${intent.getStringExtra(EXTRA_NAMASISWA)} ${binding.tvPertemuan.text}"),
+                                    NotificationData("Wali Murid mengubah Jadwal Les", "Les ${intent.getStringExtra(EXTRA_NAMALES).toString().substringAfter("Les: ")} ${intent.getStringExtra(EXTRA_NAMASISWA).toString().substringAfter("Siswa: ")} ${binding.tvPertemuan.text.toString().substringAfter("Pertemuan ")}"),
                                     dataSnapshotToken.value.toString()
                                 ).also {
                                     sendNotification(it)
